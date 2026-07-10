@@ -149,6 +149,13 @@
   </div>
 
   <div class="panel">
+    <h2>Get a Sample Quotation</h2>
+    <div class="desc">After someone fills out the quotation request form on a product, they'll be sent here to continue the conversation.</div>
+    <label>Messenger Link</label>
+    <input type="text" id="messengerLink" placeholder="https://m.me/yourpagename">
+  </div>
+
+  <div class="panel">
     <h2>Contact / Footer</h2>
     <div class="row2">
       <div>
@@ -199,6 +206,7 @@ var DEFAULTS = {
     {photo:'', name:'Retirement Planning', description:'Plan today for a worry-free retirement tomorrow.', videoLink:''},
     {photo:'', name:'Estate Planning', description:'Preserve your legacy and ensure lasting impact.', videoLink:''}
   ],
+  messengerLink: '',
   footPhone: '0917 123 4567', footEmail: 'jaymar.castro@sunlife.com.ph', footLocation: 'Philippines'
 };
 
@@ -275,6 +283,7 @@ function renderForm(){
   document.getElementById('advisorTagline').value = state.advisorTagline;
   document.getElementById('whoHeadline').value = state.whoHeadline;
   document.getElementById('whoBody').value = state.whoBody;
+  document.getElementById('messengerLink').value = state.messengerLink || '';
   document.getElementById('footPhone').value = state.footPhone;
   document.getElementById('footEmail').value = state.footEmail;
   document.getElementById('footLocation').value = state.footLocation;
@@ -434,6 +443,7 @@ function collectSimpleFields(){
   state.advisorTagline = document.getElementById('advisorTagline').value;
   state.whoHeadline = document.getElementById('whoHeadline').value;
   state.whoBody = document.getElementById('whoBody').value;
+  state.messengerLink = document.getElementById('messengerLink').value;
   state.footPhone = document.getElementById('footPhone').value;
   state.footEmail = document.getElementById('footEmail').value;
   state.footLocation = document.getElementById('footLocation').value;
