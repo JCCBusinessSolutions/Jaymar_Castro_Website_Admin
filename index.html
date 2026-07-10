@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Site Content Manager | Jaymar Castro</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0E3846; --navy-deep:#081E27; --gold:#ECAB23; --gold-deep:#C98A12; --gold-light:#F6CD6E;
+    --cream:#FBF6EA; --paper:#FFFDF8; --ink:#122229; --slate:#5B6D74; --line:#E7DFC9; --white:#FFFFFF;
+    --danger:#C0392B; --ok:#2E7D46;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:'DM Sans',sans-serif; background:var(--cream); color:var(--ink); padding-bottom:80px;}
+  h1,h2,h3{font-family:'Playfair Display',serif;}
+  header{background:var(--navy-deep); color:#fff; padding:20px 24px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; position:sticky; top:0; z-index:50;}
+  header h1{font-size:20px; font-weight:700;}
+  header .sub{font-size:12px; color:#B9C9CE; margin-top:2px; font-family:'DM Sans',sans-serif;}
+  .header-actions{display:flex; gap:10px; flex-wrap:wrap;}
+  .wrap{max-width:960px; margin:0 auto; padding:28px 20px;}
+  .panel{background:var(--paper); border:1px solid var(--line); border-radius:8px; padding:26px; margin-bottom:24px;}
+  .panel h2{font-size:20px; color:var(--navy-deep); margin-bottom:4px;}
+  .panel .desc{font-size:13px; color:var(--slate); margin-bottom:20px;}
+  label{display:block; font-size:12.5px; font-weight:700; color:var(--navy-deep); margin-bottom:6px; letter-spacing:.02em; text-transform:uppercase;}
+  input[type=text], input[type=email], input[type=tel], textarea{
+    width:100%; padding:11px 13px; border:1px solid var(--line); border-radius:6px; font-family:inherit;
+    font-size:14px; background:#fff; color:var(--ink); margin-bottom:16px;
+  }
+  input:focus, textarea:focus{outline:none; border-color:var(--gold);}
+  textarea{resize:vertical; min-height:70px;}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+  .photo-upload{display:flex; align-items:center; gap:16px; margin-bottom:18px;}
+  .photo-preview{width:80px; height:80px; border-radius:6px; background:var(--line) center/cover no-repeat; border:1px solid var(--line); flex:0 0 auto;}
+  .photo-upload-btn{
+    display:inline-flex; align-items:center; gap:8px; padding:10px 16px; background:var(--navy-deep); color:var(--gold-light);
+    border-radius:6px; font-size:12.5px; font-weight:700; cursor:pointer; border:none;
+  }
+  .photo-upload input[type=file]{display:none;}
+  .btn{
+    display:inline-flex; align-items:center; gap:8px; padding:12px 22px; border-radius:6px; font-weight:700; font-size:13px;
+    letter-spacing:.03em; cursor:pointer; border:none; text-decoration:none;
+  }
+  .btn-gold{background:linear-gradient(135deg,var(--gold-light),var(--gold)); color:var(--navy-deep);}
+  .btn-navy{background:var(--navy-deep); color:var(--gold-light);}
+  .btn-outline{background:transparent; border:1px solid var(--line); color:var(--navy-deep);}
+  .btn-small{padding:8px 14px; font-size:12px;}
+  .btn-danger{background:#fdecea; color:var(--danger); border:1px solid #f3c1bb;}
+  .product-item{border:1px solid var(--line); border-radius:8px; padding:18px; margin-bottom:14px; background:#fff; position:relative;}
+  .product-item .remove-btn{position:absolute; top:14px; right:14px;}
+  .add-row{text-align:center; padding:14px; border:1.5px dashed var(--line); border-radius:8px; cursor:pointer; color:var(--slate); font-weight:600; font-size:13px;}
+  .add-row:hover{border-color:var(--gold); color:var(--gold-deep);}
+  .titles-list{margin-bottom:16px;}
+  .title-row{display:flex; gap:8px; margin-bottom:8px;}
+  .title-row input{margin-bottom:0;}
+  .save-bar{
+    position:fixed; bottom:0; left:0; right:0; background:var(--navy-deep); padding:14px 24px;
+    display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; z-index:60;
+    box-shadow:0 -4px 20px rgba(0,0,0,.2);
+  }
+  .save-status{font-size:12.5px; color:#B9C9CE;}
+  .save-status.ok{color:var(--gold-light);}
+  #importFile{display:none;}
+  .note{font-size:12px; color:var(--slate); background:var(--cream); border:1px solid var(--line); padding:10px 14px; border-radius:6px; margin-bottom:18px;}
+  .upload-status{font-size:11.5px; color:var(--slate);}
+  .upload-status.uploading{color:var(--gold-deep);}
+  .upload-status.done{color:var(--ok);}
+  code{background:#EFE7D4; padding:1px 5px; border-radius:3px; font-size:11.5px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Site Content Manager</h1>
+    <div class="sub" id="syncStatus">Connecting to Google Sheets…</div>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-outline btn-small" id="exportBtn">Export Backup</button>
+    <button class="btn btn-outline btn-small" id="importBtn">Import Backup</button>
+    <input type="file" id="importFile" accept="application/json">
+    <a class="btn btn-outline btn-small" href="jaymar_castro_website.html" target="_blank">View Live Site ↗</a>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="note" id="configNote">⚙️ <b>One-time setup:</b> open this file, find <code>var SCRIPT_URL = '';</code> near the bottom, and paste in your deployed Apps Script Web App URL. See SETUP_INSTRUCTIONS.txt for the 5-minute walkthrough.</div>
+
+  <div class="panel">
+    <h2>Hero Section</h2>
+    <div class="desc">The top banner — your main photo, headline, and credentials.</div>
+
+    <label>Hero Background Photo</label>
+    <div class="photo-upload">
+      <div class="photo-preview" id="heroPhotoPreview"></div>
+      <label class="photo-upload-btn">Upload Photo<input type="file" accept="image/*" id="heroPhotoInput"></label>
+      <span class="upload-status" id="heroPhotoStatus"></span>
+    </div>
+
+    <label>Photo Card (portrait photo above your name)</label>
+    <div class="photo-upload">
+      <div class="photo-preview" id="heroPortraitPreview"></div>
+      <label class="photo-upload-btn">Upload Photo<input type="file" accept="image/*" id="heroPortraitInput"></label>
+      <span class="upload-status" id="heroPortraitStatus"></span>
+    </div>
+
+    <label>Headline (main line)</label>
+    <input type="text" id="heroHeadline" placeholder="Life is Brighter with">
+
+    <label>Headline (gold accent line)</label>
+    <input type="text" id="heroAccent" placeholder="Financial Confidence.">
+
+    <label>Subheadline</label>
+    <textarea id="heroLede" placeholder="Helping you achieve lifetime financial security..."></textarea>
+
+    <label>Full Name & Credentials</label>
+    <input type="text" id="advisorName" placeholder="JAYMAR CASTRO, CPA">
+
+    <label>Titles (one per line)</label>
+    <div class="titles-list" id="titlesList"></div>
+    <div class="add-row" id="addTitleBtn">+ Add another title</div>
+
+    <label style="margin-top:16px;">Tagline</label>
+    <input type="text" id="advisorTagline" placeholder="Brighter lives, together.">
+  </div>
+
+  <div class="panel">
+    <h2>Who I Am Section</h2>
+    <div class="desc">Your story photo and about text.</div>
+
+    <label>Photo</label>
+    <div class="photo-upload">
+      <div class="photo-preview" id="whoPhotoPreview"></div>
+      <label class="photo-upload-btn">Upload Photo<input type="file" accept="image/*" id="whoPhotoInput"></label>
+      <span class="upload-status" id="whoPhotoStatus"></span>
+    </div>
+
+    <label>Section Headline</label>
+    <input type="text" id="whoHeadline" placeholder="Committed to Your Financial Journey">
+
+    <label>About Text</label>
+    <textarea id="whoBody" style="min-height:110px;" placeholder="I believe that every Filipino deserves..."></textarea>
+  </div>
+
+  <div class="panel">
+    <h2>Products & Services</h2>
+    <div class="desc">Each card needs a photo, name, and short description.</div>
+    <div id="productsList"></div>
+    <div class="add-row" id="addProductBtn">+ Add a product</div>
+  </div>
+
+  <div class="panel">
+    <h2>Contact / Footer</h2>
+    <div class="row2">
+      <div>
+        <label>Phone</label>
+        <input type="text" id="footPhone" placeholder="0917 123 4567">
+      </div>
+      <div>
+        <label>Email</label>
+        <input type="text" id="footEmail" placeholder="jaymar.castro@sunlife.com.ph">
+      </div>
+    </div>
+    <label>Location</label>
+    <input type="text" id="footLocation" placeholder="Philippines">
+  </div>
+
+</div>
+
+<div class="save-bar">
+  <span class="save-status" id="saveStatus">Not saved yet</span>
+  <div style="display:flex; gap:10px;">
+    <button class="btn btn-danger btn-small" id="resetBtn">Reset to Defaults</button>
+    <button class="btn btn-gold" id="saveBtn">Save Changes</button>
+  </div>
+</div>
+
+<script>
+// =====================================================================
+// ONE-TIME SETUP: paste your deployed Apps Script Web App URL below.
+// See SETUP_INSTRUCTIONS.txt for how to get this URL (5 minutes).
+// =====================================================================
+var SCRIPT_URL = '';
+// =====================================================================
+
+var DEFAULTS = {
+  heroPhoto: '', heroPortrait: '',
+  heroHeadline: 'Life is Brighter with', heroAccent: 'Financial Confidence.',
+  heroLede: 'Helping you achieve lifetime financial security and live your dreams today and tomorrow.',
+  advisorName: 'JAYMAR CASTRO, CPA',
+  advisorTitles: ['Financial Advisor','Certified Investment Solicitor','Certified Estate Planner','Sales Manager'],
+  advisorTagline: 'Brighter lives, together.',
+  whoPhoto: '',
+  whoHeadline: 'Committed to Your Financial Journey',
+  whoBody: 'I believe that every Filipino deserves the right financial plan to achieve their dreams and secure their future. My mission is to guide you with honest advice, personalized solutions, and unwavering support every step of the way.',
+  products: [
+    {photo:'', name:'Life Insurance', description:'Protect your loved ones and secure their future.'},
+    {photo:'', name:'Investment Plans', description:'Grow your wealth and reach your financial goals faster.'},
+    {photo:'', name:'Health Protection', description:"Comprehensive coverage for you and your family's needs."},
+    {photo:'', name:'Retirement Planning', description:'Plan today for a worry-free retirement tomorrow.'},
+    {photo:'', name:'Estate Planning', description:'Preserve your legacy and ensure lasting impact.'}
+  ],
+  footPhone: '0917 123 4567', footEmail: 'jaymar.castro@sunlife.com.ph', footLocation: 'Philippines'
+};
+
+var state = null;
+
+function setSyncStatus(text, cls){
+  var el = document.getElementById('syncStatus');
+  el.textContent = text;
+  el.style.color = cls === 'ok' ? '#F6CD6E' : (cls === 'err' ? '#ff9d8a' : '#B9C9CE');
+}
+
+function scriptConfigured(){ return SCRIPT_URL && SCRIPT_URL.indexOf('https://script.google.com') === 0; }
+
+function loadState(){
+  if(!scriptConfigured()){
+    setSyncStatus('⚠️ Not connected — see setup note below', 'err');
+    document.getElementById('configNote').style.display = 'block';
+    state = JSON.parse(JSON.stringify(DEFAULTS));
+    renderForm();
+    return;
+  }
+  document.getElementById('configNote').style.display = 'none';
+  setSyncStatus('Loading saved content…');
+  fetch(SCRIPT_URL)
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      state = Object.assign({}, DEFAULTS, data);
+      Object.keys(DEFAULTS).forEach(function(k){ if(state[k] === undefined || state[k] === null) state[k] = DEFAULTS[k]; });
+      renderForm();
+      setSyncStatus('✓ Connected to Google Sheets', 'ok');
+    })
+    .catch(function(err){
+      console.error(err);
+      setSyncStatus('⚠️ Could not reach the Google Sheet — check the Script URL', 'err');
+      state = JSON.parse(JSON.stringify(DEFAULTS));
+      renderForm();
+    });
+}
+
+function fileToDataUrl(file, cb){
+  var reader = new FileReader();
+  reader.onload = function(e){ cb(e.target.result); };
+  reader.readAsDataURL(file);
+}
+
+// Uploads a photo to Google Drive via the Apps Script backend.
+// Calls onStart() immediately, then onDone(url) when the Drive URL comes back.
+function uploadPhoto(file, filename, onStart, onDone, onError){
+  if(!scriptConfigured()){
+    alert('Photo uploads need the Script URL set up first — see the setup note at the top of the page.');
+    return;
+  }
+  onStart();
+  fileToDataUrl(file, function(dataUrl){
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'}, // avoids CORS preflight on Apps Script
+      body: JSON.stringify({ action: 'uploadPhoto', dataUrl: dataUrl, filename: filename })
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(res){
+      if(res.success) onDone(res.url);
+      else onError(res.error || 'Upload failed');
+    })
+    .catch(function(err){ onError(err.message); });
+  });
+}
+
+function renderForm(){
+  document.getElementById('heroHeadline').value = state.heroHeadline;
+  document.getElementById('heroAccent').value = state.heroAccent;
+  document.getElementById('heroLede').value = state.heroLede;
+  document.getElementById('advisorName').value = state.advisorName;
+  document.getElementById('advisorTagline').value = state.advisorTagline;
+  document.getElementById('whoHeadline').value = state.whoHeadline;
+  document.getElementById('whoBody').value = state.whoBody;
+  document.getElementById('footPhone').value = state.footPhone;
+  document.getElementById('footEmail').value = state.footEmail;
+  document.getElementById('footLocation').value = state.footLocation;
+
+  setPreview('heroPhotoPreview', state.heroPhoto);
+  setPreview('heroPortraitPreview', state.heroPortrait);
+  setPreview('whoPhotoPreview', state.whoPhoto);
+
+  renderTitles();
+  renderProducts();
+}
+
+function setPreview(id, url){
+  var el = document.getElementById(id);
+  el.style.backgroundImage = url ? "url('" + url + "')" : 'none';
+}
+
+function renderTitles(){
+  var list = document.getElementById('titlesList');
+  list.innerHTML = '';
+  state.advisorTitles.forEach(function(t, i){
+    var row = document.createElement('div');
+    row.className = 'title-row';
+    var input = document.createElement('input');
+    input.type = 'text';
+    input.value = t;
+    input.oninput = function(){ state.advisorTitles[i] = input.value; };
+    var removeBtn = document.createElement('button');
+    removeBtn.className = 'btn btn-danger btn-small';
+    removeBtn.textContent = 'Remove';
+    removeBtn.onclick = function(){ state.advisorTitles.splice(i,1); renderTitles(); };
+    row.appendChild(input);
+    row.appendChild(removeBtn);
+    list.appendChild(row);
+  });
+}
+
+function renderProducts(){
+  var list = document.getElementById('productsList');
+  list.innerHTML = '';
+  state.products.forEach(function(p, i){
+    var item = document.createElement('div');
+    item.className = 'product-item';
+
+    var removeBtn = document.createElement('button');
+    removeBtn.className = 'btn btn-danger btn-small remove-btn';
+    removeBtn.textContent = 'Remove';
+    removeBtn.onclick = function(){ state.products.splice(i,1); renderProducts(); };
+    item.appendChild(removeBtn);
+
+    var photoRow = document.createElement('div');
+    photoRow.className = 'photo-upload';
+    var preview = document.createElement('div');
+    preview.className = 'photo-preview';
+    preview.style.backgroundImage = p.photo ? "url('" + p.photo + "')" : 'none';
+    var uploadLabel = document.createElement('label');
+    uploadLabel.className = 'photo-upload-btn';
+    uploadLabel.textContent = 'Upload Photo';
+    var statusSpan = document.createElement('span');
+    statusSpan.className = 'upload-status';
+    var fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.onchange = function(){
+      if(!fileInput.files[0]) return;
+      uploadPhoto(fileInput.files[0], (p.name || 'product') + '_' + i,
+        function(){ statusSpan.textContent = 'Uploading…'; statusSpan.className = 'upload-status uploading'; },
+        function(url){
+          state.products[i].photo = url;
+          preview.style.backgroundImage = "url('" + url + "')";
+          statusSpan.textContent = 'Uploaded ✓'; statusSpan.className = 'upload-status done';
+        },
+        function(err){ statusSpan.textContent = 'Failed: ' + err; statusSpan.className = 'upload-status'; }
+      );
+    };
+    uploadLabel.appendChild(fileInput);
+    photoRow.appendChild(preview);
+    photoRow.appendChild(uploadLabel);
+    photoRow.appendChild(statusSpan);
+    item.appendChild(photoRow);
+
+    var nameLabel = document.createElement('label');
+    nameLabel.textContent = 'Product Name';
+    var nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.value = p.name;
+    nameInput.oninput = function(){ state.products[i].name = nameInput.value; };
+
+    var descLabel = document.createElement('label');
+    descLabel.textContent = 'Short Description';
+    var descInput = document.createElement('textarea');
+    descInput.value = p.description;
+    descInput.oninput = function(){ state.products[i].description = descInput.value; };
+
+    item.appendChild(nameLabel);
+    item.appendChild(nameInput);
+    item.appendChild(descLabel);
+    item.appendChild(descInput);
+
+    list.appendChild(item);
+  });
+}
+
+document.getElementById('addTitleBtn').onclick = function(){
+  state.advisorTitles.push('');
+  renderTitles();
+};
+
+document.getElementById('addProductBtn').onclick = function(){
+  state.products.push({photo:'', name:'', description:''});
+  renderProducts();
+};
+
+document.getElementById('heroPhotoInput').onchange = function(e){
+  if(!e.target.files[0]) return;
+  var statusEl = document.getElementById('heroPhotoStatus');
+  uploadPhoto(e.target.files[0], 'hero_bg',
+    function(){ statusEl.textContent = 'Uploading…'; statusEl.className = 'upload-status uploading'; },
+    function(url){ state.heroPhoto = url; setPreview('heroPhotoPreview', url); statusEl.textContent = 'Uploaded ✓'; statusEl.className = 'upload-status done'; },
+    function(err){ statusEl.textContent = 'Failed: ' + err; statusEl.className = 'upload-status'; }
+  );
+};
+document.getElementById('heroPortraitInput').onchange = function(e){
+  if(!e.target.files[0]) return;
+  var statusEl = document.getElementById('heroPortraitStatus');
+  uploadPhoto(e.target.files[0], 'hero_portrait',
+    function(){ statusEl.textContent = 'Uploading…'; statusEl.className = 'upload-status uploading'; },
+    function(url){ state.heroPortrait = url; setPreview('heroPortraitPreview', url); statusEl.textContent = 'Uploaded ✓'; statusEl.className = 'upload-status done'; },
+    function(err){ statusEl.textContent = 'Failed: ' + err; statusEl.className = 'upload-status'; }
+  );
+};
+document.getElementById('whoPhotoInput').onchange = function(e){
+  if(!e.target.files[0]) return;
+  var statusEl = document.getElementById('whoPhotoStatus');
+  uploadPhoto(e.target.files[0], 'who_photo',
+    function(){ statusEl.textContent = 'Uploading…'; statusEl.className = 'upload-status uploading'; },
+    function(url){ state.whoPhoto = url; setPreview('whoPhotoPreview', url); statusEl.textContent = 'Uploaded ✓'; statusEl.className = 'upload-status done'; },
+    function(err){ statusEl.textContent = 'Failed: ' + err; statusEl.className = 'upload-status'; }
+  );
+};
+
+function collectSimpleFields(){
+  state.heroHeadline = document.getElementById('heroHeadline').value;
+  state.heroAccent = document.getElementById('heroAccent').value;
+  state.heroLede = document.getElementById('heroLede').value;
+  state.advisorName = document.getElementById('advisorName').value;
+  state.advisorTagline = document.getElementById('advisorTagline').value;
+  state.whoHeadline = document.getElementById('whoHeadline').value;
+  state.whoBody = document.getElementById('whoBody').value;
+  state.footPhone = document.getElementById('footPhone').value;
+  state.footEmail = document.getElementById('footEmail').value;
+  state.footLocation = document.getElementById('footLocation').value;
+}
+
+document.getElementById('saveBtn').onclick = function(){
+  collectSimpleFields();
+  var status = document.getElementById('saveStatus');
+  if(!scriptConfigured()){
+    alert('Set up the Script URL first — see the note at the top of the page.');
+    return;
+  }
+  status.textContent = 'Saving…';
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    headers: {'Content-Type': 'text/plain;charset=utf-8'},
+    body: JSON.stringify({ action: 'saveContent', data: state })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(res){
+    if(res.success){
+      status.textContent = 'Saved to Google Sheets ✓  ' + new Date().toLocaleTimeString();
+      status.classList.add('ok');
+    } else {
+      status.textContent = 'Save failed: ' + (res.error || 'unknown error');
+    }
+  })
+  .catch(function(err){
+    status.textContent = 'Save failed — check your connection or Script URL';
+  });
+};
+
+document.getElementById('resetBtn').onclick = function(){
+  if(confirm('Reset everything back to the original defaults? This cannot be undone unless you have a backup.')){
+    state = JSON.parse(JSON.stringify(DEFAULTS));
+    renderForm();
+    document.getElementById('saveStatus').textContent = 'Reset — click Save to apply';
+  }
+};
+
+document.getElementById('exportBtn').onclick = function(){
+  collectSimpleFields();
+  var blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'jcc-site-content-backup.json';
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+document.getElementById('importBtn').onclick = function(){
+  document.getElementById('importFile').click();
+};
+document.getElementById('importFile').onchange = function(e){
+  var file = e.target.files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(evt){
+    try{
+      var imported = JSON.parse(evt.target.result);
+      state = imported;
+      Object.keys(DEFAULTS).forEach(function(k){ if(state[k] === undefined) state[k] = DEFAULTS[k]; });
+      renderForm();
+      document.getElementById('saveStatus').textContent = 'Backup loaded — click Save to push it to Google Sheets';
+    } catch(err){
+      alert('That file could not be read as a valid backup.');
+    }
+  };
+  reader.readAsText(file);
+};
+
+loadState();
+</script>
+
+</body>
+</html>
