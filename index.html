@@ -125,16 +125,13 @@
 
   <div class="panel">
     <h2>Who I Am Section</h2>
-    <div class="desc">Your story photo and about text.</div>
+    <div class="desc">Your story photos (shown as an auto-advancing slideshow — add as many as you like) and about text.</div>
 
-    <label>Photo</label>
-    <div class="photo-upload">
-      <div class="photo-preview" id="whoPhotoPreview"></div>
-      <label class="photo-upload-btn">Upload Photo<input type="file" accept="image/*" id="whoPhotoInput"></label>
-      <span class="upload-status" id="whoPhotoStatus"></span>
-    </div>
+    <label>Photos (slideshow — fades every 3 seconds, visitors can also click arrows to move through them)</label>
+    <div id="whoPhotosList"></div>
+    <div class="add-row" id="addWhoPhotoBtn">+ Add a photo</div>
 
-    <label>Section Headline</label>
+    <label style="margin-top:20px;">Section Headline</label>
     <input type="text" id="whoHeadline" placeholder="Committed to Your Financial Journey">
 
     <label>About Text</label>
@@ -196,7 +193,7 @@ var DEFAULTS = {
   advisorName: 'JAYMAR CASTRO, CPA',
   advisorTitles: ['Financial Advisor','Certified Investment Solicitor','Certified Estate Planner','Sales Manager'],
   advisorTagline: 'Brighter lives, together.',
-  whoPhoto: '',
+  whoPhotos: [],
   whoHeadline: 'Committed to Your Financial Journey',
   whoBody: 'I believe that every Filipino deserves the right financial plan to achieve their dreams and secure their future. My mission is to guide you with honest advice, personalized solutions, and unwavering support every step of the way.',
   products: [
@@ -235,6 +232,11 @@ function loadState(){
     .then(function(data){
       state = Object.assign({}, DEFAULTS, data);
       Object.keys(DEFAULTS).forEach(function(k){ if(state[k] === undefined || state[k] === null) state[k] = DEFAULTS[k]; });
+      // migrate legacy single-photo field to the new multi-photo array
+      if((!Array.isArray(state.whoPhotos) || !state.whoPhotos.length) && data.whoPhoto){
+        state.whoPhotos = [data.whoPhoto];
+      }
+      if(!Array.isArray(state.whoPhotos)) state.whoPhotos = [];
       renderForm();
       setSyncStatus('✓ Connected to Google Sheets', 'ok');
     })
@@ -290,9 +292,9 @@ function renderForm(){
 
   setPreview('heroPhotoPreview', state.heroPhoto);
   setPreview('heroPortraitPreview', state.heroPortrait);
-  setPreview('whoPhotoPreview', state.whoPhoto);
 
   renderTitles();
+  renderWhoPhotos();
   renderProducts();
 }
 
@@ -316,6 +318,61 @@ function renderTitles(){
     removeBtn.textContent = 'Remove';
     removeBtn.onclick = function(){ state.advisorTitles.splice(i,1); renderTitles(); };
     row.appendChild(input);
+    row.appendChild(removeBtn);
+    list.appendChild(row);
+  });
+}
+
+function renderWhoPhotos(){
+  var list = document.getElementById('whoPhotosList');
+  list.innerHTML = '';
+  if(!state.whoPhotos.length){
+    var empty = document.createElement('div');
+    empty.style.cssText = 'font-size:12.5px; color:var(--slate); margin-bottom:14px;';
+    empty.textContent = 'No photos yet — add your first one below.';
+    list.appendChild(empty);
+  }
+  state.whoPhotos.forEach(function(url, i){
+    var row = document.createElement('div');
+    row.className = 'photo-upload';
+    row.style.marginBottom = '10px';
+
+    var preview = document.createElement('div');
+    preview.className = 'photo-preview';
+    preview.style.backgroundImage = url ? "url('" + url + "')" : 'none';
+
+    var uploadLabel = document.createElement('label');
+    uploadLabel.className = 'photo-upload-btn';
+    uploadLabel.textContent = url ? 'Replace Photo' : 'Upload Photo';
+    var statusSpan = document.createElement('span');
+    statusSpan.className = 'upload-status';
+    var fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.onchange = function(){
+      if(!fileInput.files[0]) return;
+      uploadPhoto(fileInput.files[0], 'who_photo_' + i,
+        function(){ statusSpan.textContent = 'Uploading…'; statusSpan.className = 'upload-status uploading'; },
+        function(uploadedUrl){
+          state.whoPhotos[i] = uploadedUrl;
+          preview.style.backgroundImage = "url('" + uploadedUrl + "')";
+          uploadLabel.childNodes[0].textContent = 'Replace Photo';
+          statusSpan.textContent = 'Uploaded ✓'; statusSpan.className = 'upload-status done';
+        },
+        function(err){ statusSpan.textContent = 'Failed: ' + err; statusSpan.className = 'upload-status'; }
+      );
+    };
+    uploadLabel.appendChild(fileInput);
+
+    var removeBtn = document.createElement('button');
+    removeBtn.className = 'btn btn-danger btn-small';
+    removeBtn.textContent = 'Remove';
+    removeBtn.style.marginLeft = 'auto';
+    removeBtn.onclick = function(){ state.whoPhotos.splice(i, 1); renderWhoPhotos(); };
+
+    row.appendChild(preview);
+    row.appendChild(uploadLabel);
+    row.appendChild(statusSpan);
     row.appendChild(removeBtn);
     list.appendChild(row);
   });
@@ -407,6 +464,11 @@ document.getElementById('addProductBtn').onclick = function(){
   renderProducts();
 };
 
+document.getElementById('addWhoPhotoBtn').onclick = function(){
+  state.whoPhotos.push('');
+  renderWhoPhotos();
+};
+
 document.getElementById('heroPhotoInput').onchange = function(e){
   if(!e.target.files[0]) return;
   var statusEl = document.getElementById('heroPhotoStatus');
@@ -422,15 +484,6 @@ document.getElementById('heroPortraitInput').onchange = function(e){
   uploadPhoto(e.target.files[0], 'hero_portrait',
     function(){ statusEl.textContent = 'Uploading…'; statusEl.className = 'upload-status uploading'; },
     function(url){ state.heroPortrait = url; setPreview('heroPortraitPreview', url); statusEl.textContent = 'Uploaded ✓'; statusEl.className = 'upload-status done'; },
-    function(err){ statusEl.textContent = 'Failed: ' + err; statusEl.className = 'upload-status'; }
-  );
-};
-document.getElementById('whoPhotoInput').onchange = function(e){
-  if(!e.target.files[0]) return;
-  var statusEl = document.getElementById('whoPhotoStatus');
-  uploadPhoto(e.target.files[0], 'who_photo',
-    function(){ statusEl.textContent = 'Uploading…'; statusEl.className = 'upload-status uploading'; },
-    function(url){ state.whoPhoto = url; setPreview('whoPhotoPreview', url); statusEl.textContent = 'Uploaded ✓'; statusEl.className = 'upload-status done'; },
     function(err){ statusEl.textContent = 'Failed: ' + err; statusEl.className = 'upload-status'; }
   );
 };
