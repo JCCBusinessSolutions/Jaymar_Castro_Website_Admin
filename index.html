@@ -63,6 +63,18 @@
   .save-status{font-size:12.5px; color:#B9C9CE;}
   .save-status.ok{color:var(--gold-light);}
   .note{font-size:12px; color:var(--slate); background:var(--cream); border:1px solid var(--line); padding:10px 14px; border-radius:6px; margin-bottom:18px;}
+  .testi-item{border:1px solid var(--line); border-radius:8px; padding:16px 18px; margin-bottom:12px; background:#fff;}
+  .testi-item-top{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:8px;}
+  .testi-item-name{font-weight:700; color:var(--navy-deep); font-size:14px;}
+  .testi-item-role{font-size:12px; color:var(--slate);}
+  .testi-item-stars{color:var(--gold); font-size:13px; letter-spacing:1px;}
+  .testi-item-msg{font-size:13px; color:var(--ink); line-height:1.6; margin:8px 0 12px;}
+  .testi-badge{font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; padding:3px 9px; border-radius:20px;}
+  .testi-badge.pending{background:#FDF3DA; color:#8A6100;}
+  .testi-badge.approved{background:#E3F3E7; color:#1E6B34;}
+  .testi-badge.rejected{background:#FBE7E5; color:#A6362B;}
+  .testi-item-actions{display:flex; gap:8px; flex-wrap:wrap;}
+  .btn-outline.active-filter{background:var(--navy-deep); color:var(--gold-light); border-color:var(--navy-deep);}
   .upload-status{font-size:11.5px; color:var(--slate);}
   .upload-status.uploading{color:var(--gold-deep);}
   .upload-status.done{color:var(--ok);}
@@ -153,6 +165,40 @@
   </div>
 
   <div class="panel">
+    <h2>Apply as a Financial Advisor Page</h2>
+    <div class="desc">This content shows in the "Apply as a Financial Advisor" section of your site — it opens in a new tab scrolled straight to it, with a slideshow of team/experience photos plus embedded videos.</div>
+
+    <label>Page Subtitle (shown at the very top)</label>
+    <textarea id="applyPageSubtitle" placeholder="Build a meaningful career helping Filipino families achieve financial security..."></textarea>
+
+    <label>Gallery Section Title</label>
+    <input type="text" id="applyPageTitle" placeholder="Me & My Team in Action">
+
+    <label>About / Body Text</label>
+    <textarea id="applyPageBody" style="min-height:110px;" placeholder="Starting a career in financial services can feel overwhelming..."></textarea>
+
+    <label style="margin-top:20px;">Team &amp; Experience Photos (slideshow — add as many as you like)</label>
+    <div id="applyPhotosList"></div>
+    <div class="add-row" id="addApplyPhotoBtn">+ Add a photo</div>
+
+    <label style="margin-top:20px;">Videos (YouTube links play directly on the page — other links show as a "Watch Video" button)</label>
+    <div id="applyVideosList"></div>
+    <div class="add-row" id="addApplyVideoBtn">+ Add a video</div>
+  </div>
+
+  <div class="panel">
+    <h2>Client Feedback &amp; Ratings</h2>
+    <div class="desc">Reviews clients submit on your site land here first. Approve to make them go live, or reject to hide them.</div>
+    <div style="display:flex; gap:8px; margin-bottom:16px;">
+      <button class="btn btn-outline btn-small" id="testiFilterAll">All</button>
+      <button class="btn btn-outline btn-small" id="testiFilterPending">Pending</button>
+      <button class="btn btn-outline btn-small" id="testiFilterApproved">Approved</button>
+      <button class="btn btn-outline btn-small" id="testiRefreshBtn" style="margin-left:auto;">Refresh</button>
+    </div>
+    <div id="testimonialsList"></div>
+  </div>
+
+  <div class="panel">
     <h2>Contact / Footer</h2>
     <div class="row2">
       <div>
@@ -204,6 +250,11 @@ var DEFAULTS = {
     {photo:'', name:'Estate Planning', description:'Preserve your legacy and ensure lasting impact.', videoLink:''}
   ],
   messengerLink: '',
+  applyPageTitle: 'Me & My Team in Action',
+  applyPageSubtitle: 'Build a meaningful career helping Filipino families achieve financial security — with mentorship, training, and a team behind you every step of the way.',
+  applyPageBody: "Starting a career in financial services can feel overwhelming — but you won't be doing it alone. Our team provides structured training, one-on-one mentorship, and a proven system for building a sustainable practice.",
+  applyPagePhotos: [],
+  applyPageVideos: [],
   footPhone: '0917 123 4567', footEmail: 'jaymar.castro@sunlife.com.ph', footLocation: 'Philippines'
 };
 
@@ -237,6 +288,8 @@ function loadState(){
         state.whoPhotos = [data.whoPhoto];
       }
       if(!Array.isArray(state.whoPhotos)) state.whoPhotos = [];
+      if(!Array.isArray(state.applyPagePhotos)) state.applyPagePhotos = [];
+      if(!Array.isArray(state.applyPageVideos)) state.applyPageVideos = [];
       renderForm();
       setSyncStatus('✓ Connected to Google Sheets', 'ok');
     })
@@ -286,6 +339,9 @@ function renderForm(){
   document.getElementById('whoHeadline').value = state.whoHeadline;
   document.getElementById('whoBody').value = state.whoBody;
   document.getElementById('messengerLink').value = state.messengerLink || '';
+  document.getElementById('applyPageTitle').value = state.applyPageTitle || '';
+  document.getElementById('applyPageSubtitle').value = state.applyPageSubtitle || '';
+  document.getElementById('applyPageBody').value = state.applyPageBody || '';
   document.getElementById('footPhone').value = state.footPhone;
   document.getElementById('footEmail').value = state.footEmail;
   document.getElementById('footLocation').value = state.footLocation;
@@ -295,6 +351,8 @@ function renderForm(){
 
   renderTitles();
   renderWhoPhotos();
+  renderApplyPhotos();
+  renderApplyVideos();
   renderProducts();
 }
 
@@ -375,6 +433,105 @@ function renderWhoPhotos(){
     row.appendChild(statusSpan);
     row.appendChild(removeBtn);
     list.appendChild(row);
+  });
+}
+
+function renderApplyPhotos(){
+  var list = document.getElementById('applyPhotosList');
+  list.innerHTML = '';
+  if(!state.applyPagePhotos.length){
+    var empty = document.createElement('div');
+    empty.style.cssText = 'font-size:12.5px; color:var(--slate); margin-bottom:14px;';
+    empty.textContent = 'No photos yet — add your first one below.';
+    list.appendChild(empty);
+  }
+  state.applyPagePhotos.forEach(function(url, i){
+    var row = document.createElement('div');
+    row.className = 'photo-upload';
+    row.style.marginBottom = '10px';
+
+    var preview = document.createElement('div');
+    preview.className = 'photo-preview';
+    preview.style.backgroundImage = url ? "url('" + url + "')" : 'none';
+
+    var uploadLabel = document.createElement('label');
+    uploadLabel.className = 'photo-upload-btn';
+    uploadLabel.textContent = url ? 'Replace Photo' : 'Upload Photo';
+    var statusSpan = document.createElement('span');
+    statusSpan.className = 'upload-status';
+    var fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.onchange = function(){
+      if(!fileInput.files[0]) return;
+      uploadPhoto(fileInput.files[0], 'apply_photo_' + i,
+        function(){ statusSpan.textContent = 'Uploading…'; statusSpan.className = 'upload-status uploading'; },
+        function(uploadedUrl){
+          state.applyPagePhotos[i] = uploadedUrl;
+          preview.style.backgroundImage = "url('" + uploadedUrl + "')";
+          uploadLabel.childNodes[0].textContent = 'Replace Photo';
+          statusSpan.textContent = 'Uploaded ✓'; statusSpan.className = 'upload-status done';
+        },
+        function(err){ statusSpan.textContent = 'Failed: ' + err; statusSpan.className = 'upload-status'; }
+      );
+    };
+    uploadLabel.appendChild(fileInput);
+
+    var removeBtn = document.createElement('button');
+    removeBtn.className = 'btn btn-danger btn-small';
+    removeBtn.textContent = 'Remove';
+    removeBtn.style.marginLeft = 'auto';
+    removeBtn.onclick = function(){ state.applyPagePhotos.splice(i, 1); renderApplyPhotos(); };
+
+    row.appendChild(preview);
+    row.appendChild(uploadLabel);
+    row.appendChild(statusSpan);
+    row.appendChild(removeBtn);
+    list.appendChild(row);
+  });
+}
+
+function renderApplyVideos(){
+  var list = document.getElementById('applyVideosList');
+  list.innerHTML = '';
+  if(!state.applyPageVideos.length){
+    var empty = document.createElement('div');
+    empty.style.cssText = 'font-size:12.5px; color:var(--slate); margin-bottom:14px;';
+    empty.textContent = 'No videos yet — add your first one below.';
+    list.appendChild(empty);
+  }
+  state.applyPageVideos.forEach(function(v, i){
+    var item = document.createElement('div');
+    item.className = 'product-item';
+
+    var removeBtn = document.createElement('button');
+    removeBtn.className = 'btn btn-danger btn-small remove-btn';
+    removeBtn.textContent = 'Remove';
+    removeBtn.onclick = function(){ state.applyPageVideos.splice(i, 1); renderApplyVideos(); };
+    item.appendChild(removeBtn);
+
+    var titleLabel = document.createElement('label');
+    titleLabel.textContent = 'Video Title';
+    var titleInput = document.createElement('input');
+    titleInput.type = 'text';
+    titleInput.value = v.title || '';
+    titleInput.placeholder = 'e.g. Why I Joined the Team';
+    titleInput.oninput = function(){ state.applyPageVideos[i].title = titleInput.value; };
+
+    var urlLabel = document.createElement('label');
+    urlLabel.textContent = 'YouTube (or other video) Link';
+    var urlInput = document.createElement('input');
+    urlInput.type = 'text';
+    urlInput.value = v.url || '';
+    urlInput.placeholder = 'https://www.youtube.com/watch?v=...';
+    urlInput.oninput = function(){ state.applyPageVideos[i].url = urlInput.value; };
+
+    item.appendChild(titleLabel);
+    item.appendChild(titleInput);
+    item.appendChild(urlLabel);
+    item.appendChild(urlInput);
+
+    list.appendChild(item);
   });
 }
 
@@ -469,6 +626,16 @@ document.getElementById('addWhoPhotoBtn').onclick = function(){
   renderWhoPhotos();
 };
 
+document.getElementById('addApplyPhotoBtn').onclick = function(){
+  state.applyPagePhotos.push('');
+  renderApplyPhotos();
+};
+
+document.getElementById('addApplyVideoBtn').onclick = function(){
+  state.applyPageVideos.push({title:'', url:''});
+  renderApplyVideos();
+};
+
 document.getElementById('heroPhotoInput').onchange = function(e){
   if(!e.target.files[0]) return;
   var statusEl = document.getElementById('heroPhotoStatus');
@@ -497,6 +664,9 @@ function collectSimpleFields(){
   state.whoHeadline = document.getElementById('whoHeadline').value;
   state.whoBody = document.getElementById('whoBody').value;
   state.messengerLink = document.getElementById('messengerLink').value;
+  state.applyPageTitle = document.getElementById('applyPageTitle').value;
+  state.applyPageSubtitle = document.getElementById('applyPageSubtitle').value;
+  state.applyPageBody = document.getElementById('applyPageBody').value;
   state.footPhone = document.getElementById('footPhone').value;
   state.footEmail = document.getElementById('footEmail').value;
   state.footLocation = document.getElementById('footLocation').value;
@@ -537,7 +707,139 @@ document.getElementById('resetBtn').onclick = function(){
   }
 };
 
+// ===== Client feedback / testimonials moderation =====
+var allTestimonials = [];
+var testiFilter = 'all';
+
+function loadTestimonials(){
+  if(!scriptConfigured()) return;
+  var list = document.getElementById('testimonialsList');
+  list.innerHTML = '<div style="font-size:12.5px; color:var(--slate);">Loading…</div>';
+  fetch(SCRIPT_URL + '?type=testimonials_all')
+    .then(function(r){ return r.json(); })
+    .then(function(res){
+      allTestimonials = (res.success && Array.isArray(res.testimonials)) ? res.testimonials : [];
+      renderTestimonials();
+    })
+    .catch(function(){
+      list.innerHTML = '<div style="font-size:12.5px; color:var(--danger);">Could not load feedback — check your connection.</div>';
+    });
+}
+
+function renderTestimonials(){
+  var list = document.getElementById('testimonialsList');
+  list.innerHTML = '';
+
+  var filtered = allTestimonials.filter(function(t){
+    if(testiFilter === 'all') return true;
+    return t.status === testiFilter;
+  });
+
+  if(!filtered.length){
+    list.innerHTML = '<div style="font-size:12.5px; color:var(--slate);">No feedback here yet.</div>';
+    return;
+  }
+
+  filtered.forEach(function(t){
+    var item = document.createElement('div');
+    item.className = 'testi-item';
+
+    var stars = '★★★★★'.slice(0, Math.max(1, Math.min(5, parseInt(t.rating,10) || 5)));
+    var badgeClass = t.status === 'approved' ? 'approved' : (t.status === 'rejected' ? 'rejected' : 'pending');
+
+    var top = document.createElement('div');
+    top.className = 'testi-item-top';
+    top.innerHTML =
+      '<div><span class="testi-item-name">' + (t.name || 'Anonymous') + '</span>' +
+      (t.role ? ' <span class="testi-item-role">— ' + t.role + '</span>' : '') + '</div>' +
+      '<span class="testi-badge ' + badgeClass + '">' + t.status + '</span>';
+
+    var starsEl = document.createElement('div');
+    starsEl.className = 'testi-item-stars';
+    starsEl.textContent = stars;
+
+    var msg = document.createElement('div');
+    msg.className = 'testi-item-msg';
+    msg.textContent = t.message || '';
+
+    var actions = document.createElement('div');
+    actions.className = 'testi-item-actions';
+
+    if(t.status !== 'approved'){
+      var approveBtn = document.createElement('button');
+      approveBtn.className = 'btn btn-gold btn-small';
+      approveBtn.textContent = 'Approve';
+      approveBtn.onclick = function(){ updateTestimonialStatus(t.id, 'approved'); };
+      actions.appendChild(approveBtn);
+    }
+    if(t.status !== 'rejected'){
+      var rejectBtn = document.createElement('button');
+      rejectBtn.className = 'btn btn-outline btn-small';
+      rejectBtn.textContent = 'Reject';
+      rejectBtn.onclick = function(){ updateTestimonialStatus(t.id, 'rejected'); };
+      actions.appendChild(rejectBtn);
+    }
+    var deleteBtn = document.createElement('button');
+    deleteBtn.className = 'btn btn-danger btn-small';
+    deleteBtn.textContent = 'Delete';
+    deleteBtn.onclick = function(){ deleteTestimonial(t.id); };
+    actions.appendChild(deleteBtn);
+
+    item.appendChild(top);
+    item.appendChild(starsEl);
+    item.appendChild(msg);
+    item.appendChild(actions);
+    list.appendChild(item);
+  });
+}
+
+function updateTestimonialStatus(id, status){
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    headers: {'Content-Type': 'text/plain;charset=utf-8'},
+    body: JSON.stringify({ action: 'updateTestimonialStatus', id: id, status: status })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(res){
+    if(res.success) loadTestimonials();
+    else alert('Could not update: ' + (res.error || 'unknown error'));
+  })
+  .catch(function(){ alert('Could not update — check your connection.'); });
+}
+
+function deleteTestimonial(id){
+  if(!confirm('Permanently delete this feedback? This cannot be undone.')) return;
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    headers: {'Content-Type': 'text/plain;charset=utf-8'},
+    body: JSON.stringify({ action: 'deleteTestimonial', id: id })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(res){
+    if(res.success) loadTestimonials();
+    else alert('Could not delete: ' + (res.error || 'unknown error'));
+  })
+  .catch(function(){ alert('Could not delete — check your connection.'); });
+}
+
+function setTestiFilter(f){
+  testiFilter = f;
+  ['testiFilterAll','testiFilterPending','testiFilterApproved'].forEach(function(id){
+    document.getElementById(id).classList.remove('active-filter');
+  });
+  var map = { all:'testiFilterAll', pending:'testiFilterPending', approved:'testiFilterApproved' };
+  document.getElementById(map[f]).classList.add('active-filter');
+  renderTestimonials();
+}
+
+document.getElementById('testiFilterAll').onclick = function(){ setTestiFilter('all'); };
+document.getElementById('testiFilterPending').onclick = function(){ setTestiFilter('pending'); };
+document.getElementById('testiFilterApproved').onclick = function(){ setTestiFilter('approved'); };
+document.getElementById('testiRefreshBtn').onclick = loadTestimonials;
+setTestiFilter('all');
+
 loadState();
+loadTestimonials();
 </script>
 
 </body>
