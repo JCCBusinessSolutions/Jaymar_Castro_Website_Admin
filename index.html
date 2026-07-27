@@ -142,6 +142,13 @@
   </div>
 
   <div class="panel">
+    <h2>🔔 Notifications</h2>
+    <div class="desc">Where new quotation requests and client feedback get emailed. This replaces editing Code.gs directly — set it once here and it applies immediately, no redeploying needed.</div>
+    <label>Notification Email</label>
+    <input type="text" id="notifyEmailInput" placeholder="you@example.com">
+  </div>
+
+  <div class="panel">
     <h2>🎨 Website Layout</h2>
     <div class="desc">Click a layout to switch your site's overall look — same content, links, and titles, just a different visual style. Click Save Changes afterward to make it live.</div>
     <div class="layout-picker" id="layoutPicker">
@@ -401,6 +408,7 @@ var SCRIPT_URL = localStorage.getItem(SCRIPT_URL_STORAGE_KEY) || DEFAULT_SCRIPT_
 
 var DEFAULTS = {
   layoutStyle: '1',
+  notifyEmail: '',
   heroPhoto: '', heroPortrait: '',
   heroHeadline: 'Life is Brighter with', heroAccent: 'Financial Confidence.',
   heroLede: 'Helping you achieve lifetime financial security and live your dreams today and tomorrow.',
@@ -541,6 +549,7 @@ function uploadPhoto(file, filename, onStart, onDone, onError){
 }
 
 function renderForm(){
+  document.getElementById('notifyEmailInput').value = state.notifyEmail || '';
   document.getElementById('heroHeadline').value = state.heroHeadline;
   document.getElementById('heroAccent').value = state.heroAccent;
   document.getElementById('heroLede').value = state.heroLede;
@@ -1006,6 +1015,7 @@ document.getElementById('heroPortraitInput').onchange = function(e){
 };
 
 function collectSimpleFields(){
+  state.notifyEmail = document.getElementById('notifyEmailInput').value.trim();
   state.heroHeadline = document.getElementById('heroHeadline').value;
   state.heroAccent = document.getElementById('heroAccent').value;
   state.heroLede = document.getElementById('heroLede').value;
