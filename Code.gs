@@ -25,8 +25,14 @@ function doGet(e) {
 
   var sheet = getSheet_();
   var json = sheet.getRange('A1').getValue();
-  if (!json) json = '{}';
-  return ContentService.createTextOutput(json).setMimeType(ContentService.MimeType.JSON);
+  var content = json ? JSON.parse(json) : {};
+
+  // Bundled in here too, so the live site only needs ONE request instead of
+  // two — each separate request pays Apps Script's cold-start delay on its
+  // own, so merging them roughly halves that tax on page load.
+  content.approvedTestimonials = getTestimonials_(true);
+
+  return jsonResponse_(content);
 }
 
 // ---------- WRITE (called by the admin panel: save content / upload photo) ----------
@@ -98,7 +104,13 @@ function handleLeadSubmit_(body) {
       '-----------------------------------\n\n' +
       'Submitted: ' + new Date().toString();
 
-    MailApp.sendEmail(recipient, subject, messageBody);
+    try {
+      MailApp.sendEmail(recipient, subject, messageBody);
+    } catch (mailErr) {
+      // The lead is already saved above — don't let an email hiccup report
+      // the whole submission as failed. Log it so it's visible in Executions.
+      console.error('Lead saved, but notification email failed: ' + mailErr.message);
+    }
 
     return jsonResponse_({ success: true });
   } catch (err) {
@@ -327,4 +339,81 @@ function authorizeMe() {
     'JCC Site — Authorization Test',
     'If you are reading this, email notifications are now authorized and working correctly.'
   );
+}
+
+/**
+ * DIAGNOSTIC — run this to see exactly what's going on, no guessing.
+ * ------------------------------------------------
+ * HOW TO RUN IT AND SEE THE RESULT:
+ *   1. Function dropdown (top, next to Run) → select "debugNotifyEmail".
+ *   2. Click Run.
+ *   3. Click "Executions" in the left sidebar (clock icon).
+ *   4. Click the most recent run at the top of that list.
+ *   5. You'll see exactly what email address is being used, and the
+ *      raw saved content, right there in the log output.
+ */
+function debugNotifyEmail() {
+  var resolved = getNotifyEmail_();
+  console.log('=== RESOLVED NOTIFICATION EMAIL: ' + resolved + ' ===');
+
+  var sheet = getSheet_();
+  var rawJson = sheet.getRange('A1').getValue();
+  console.log('=== RAW SAVED CONTENT (from admin.html Save Changes) ===');
+  console.log(rawJson || '(A1 is empty — nothing has ever been saved from admin.html to this Sheet)');
+
+  var quota = MailApp.getRemainingDailyQuota();
+  console.log('=== REMAINING EMAIL QUOTA TODAY: ' + quota + ' ===');
+}
+
+/**
+ * KEEP-WARM TRIGGER (optional, experimental)
+ * ------------------------------------------------
+ * Apps Script Web Apps can go "cold" after a period of no traffic, adding
+ * a 1-3 second delay to the next real visitor's page load while Google
+ * spins the script back up. This periodically pings your own site to try
+ * to reduce how often that happens.
+ *
+ * IMPORTANT HONESTY NOTE: Google doesn't officially document or guarantee
+ * that self-pinging actually prevents cold starts on Apps Script Web Apps
+ * specifically (unlike some other platforms with an official "keep warm"
+ * feature). Many people report it helping; it's not guaranteed. Consider
+ * this a reasonable experiment, not a fix you can be 100% sure of.
+ *
+ * HOW TO TURN IT ON (run once):
+ *   1. Function dropdown → select "setupKeepWarmTrigger".
+ *   2. Click Run. Approve any permission prompt if asked.
+ *   3. Done — it now pings your site automatically every 10 minutes.
+ *
+ * HOW TO TURN IT OFF LATER:
+ *   1. Function dropdown → select "removeKeepWarmTrigger".
+ *   2. Click Run.
+ */
+function keepWarm() {
+  try {
+    var url = ScriptApp.getService().getUrl();
+    UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+  } catch (err) {
+    console.error('keepWarm ping failed: ' + err.message);
+  }
+}
+
+function setupKeepWarmTrigger() {
+  removeKeepWarmTrigger(); // avoid creating duplicates if run more than once
+  ScriptApp.newTrigger('keepWarm')
+    .timeBased()
+    .everyMinutes(10)
+    .create();
+  console.log('Keep-warm trigger installed — pinging every 10 minutes.');
+}
+
+function removeKeepWarmTrigger() {
+  var triggers = ScriptApp.getProjectTriggers();
+  var removed = 0;
+  for (var i = 0; i < triggers.length; i++) {
+    if (triggers[i].getHandlerFunction() === 'keepWarm') {
+      ScriptApp.deleteTrigger(triggers[i]);
+      removed++;
+    }
+  }
+  console.log('Removed ' + removed + ' existing keep-warm trigger(s).');
 }
