@@ -64,6 +64,30 @@
   .layout-preview-3 .lp-lines span:nth-child(1){width:95%; background:#0E3846; height:10px;}
   .layout-preview-3 .lp-lines span:nth-child(2){width:80%; height:8px;}
   .layout-preview-3 .lp-lines span:nth-child(3){width:60%; background:#ECAB23; height:6px;}
+  /* Style 3 — Yellow Elegant Female: cream hero, arched gold portrait cue */
+  .layout-preview-4 .lp-hero{background:linear-gradient(120deg,#FBF4E6,#FBF4E6 55%,#E4A93A 130%);}
+  .layout-preview-4 .lp-lines span:nth-child(1){width:65%; background:#15304C;}
+  .layout-preview-4 .lp-lines span:nth-child(2){width:88%; background:#E4A93A;}
+  .layout-preview-4 .lp-lines span:nth-child(3){width:45%; background:#15304C; height:7px;}
+  /* Style 4 — Yellow Elegant Male: deep midnight navy, restrained champagne gold */
+  .layout-preview-5 .lp-hero{background:linear-gradient(120deg,#0A1E30,#132C42 60%,#C9A227 135%);}
+  .layout-preview-5 .lp-lines span:nth-child(1){width:70%; background:#0A1E30; border-radius:0;}
+  .layout-preview-5 .lp-lines span:nth-child(2){width:90%; border-radius:0;}
+  .layout-preview-5 .lp-lines span:nth-child(3){width:50%; background:#C9A227; height:7px; border-radius:0;}
+  /* Reserved slot — muted placeholder, not yet designed */
+  .layout-preview-6{background:repeating-linear-gradient(135deg, var(--navy-deep), var(--navy-deep) 8px, #123049 8px, #123049 16px);}
+  .layout-preview-6 .lp-hero{background:transparent;}
+  .layout-preview-6 .lp-lines span{background:rgba(255,255,255,.22);}
+  .layout-preview-6 .lp-lines span:nth-child(2){width:75%;}
+  .layout-preview-6 .lp-lines span:nth-child(3){width:40%;}
+  .layout-option.coming-soon{opacity:.62; cursor:not-allowed;}
+  .layout-option.coming-soon:hover{transform:none; box-shadow:none;}
+  .layout-option.coming-soon .layout-option-name{display:flex; align-items:center; gap:6px;}
+  .layout-option.coming-soon .soon-tag{
+    font-size:9px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--slate); background:var(--paper); border:1px solid var(--line);
+    border-radius:20px; padding:2px 7px;
+  }
   @media (max-width:640px){
     .layout-picker{grid-template-columns:1fr;}
   }
@@ -175,6 +199,30 @@
         </div>
         <div class="layout-option-name">Bold Editorial</div>
         <div class="layout-option-desc">Oversized type, dramatic spacing, magazine-style presence</div>
+      </div>
+      <div class="layout-option" data-value="4">
+        <div class="layout-preview layout-preview-4">
+          <div class="lp-hero"></div>
+          <div class="lp-lines"><span></span><span></span><span></span></div>
+        </div>
+        <div class="layout-option-name">Style 3 — Elegant Female</div>
+        <div class="layout-option-desc">Cream & gold, arched portrait frame, bright and editorial</div>
+      </div>
+      <div class="layout-option" data-value="5">
+        <div class="layout-preview layout-preview-5">
+          <div class="lp-hero"></div>
+          <div class="lp-lines"><span></span><span></span><span></span></div>
+        </div>
+        <div class="layout-option-name">Style 4 — Elegant Male</div>
+        <div class="layout-option-desc">Midnight navy & champagne gold, executive and restrained</div>
+      </div>
+      <div class="layout-option coming-soon" data-value="6" aria-disabled="true" title="Coming soon">
+        <div class="layout-preview layout-preview-6">
+          <div class="lp-hero"></div>
+          <div class="lp-lines"><span></span><span></span><span></span></div>
+        </div>
+        <div class="layout-option-name">Style 5 <span class="soon-tag">Coming Soon</span></div>
+        <div class="layout-option-desc">Reserved for a future style — not selectable yet</div>
       </div>
     </div>
   </div>
@@ -779,6 +827,7 @@ function renderLayoutPicker(){
   var options = document.querySelectorAll('#layoutPicker .layout-option');
   options.forEach(function(opt){
     opt.classList.toggle('active', opt.getAttribute('data-value') === (state.layoutStyle || '1'));
+    if(opt.classList.contains('coming-soon')) return; // reserved slot — not selectable yet
     opt.onclick = function(){
       state.layoutStyle = opt.getAttribute('data-value');
       options.forEach(function(o){ o.classList.remove('active'); });
