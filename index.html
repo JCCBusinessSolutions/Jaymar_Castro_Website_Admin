@@ -20,6 +20,7 @@
     --danger:#C0392B; --ok:#2E7D46;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
   body{font-family:'DM Sans',sans-serif; background:var(--cream); color:var(--ink); padding-bottom:80px;}
   h1,h2,h3{font-family:'Playfair Display',serif;}
   header{background:var(--navy-deep); color:#fff; padding:20px 24px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; position:sticky; top:0; z-index:50;}
@@ -27,7 +28,7 @@
   header .sub{font-size:12px; color:#B9C9CE; margin-top:2px; font-family:'DM Sans',sans-serif;}
   .header-actions{display:flex; gap:10px; flex-wrap:wrap;}
   .wrap{max-width:960px; margin:0 auto; padding:28px 20px;}
-  .panel{background:var(--paper); border:1px solid var(--line); border-radius:8px; padding:26px; margin-bottom:24px;}
+  .panel{background:var(--paper); border:1px solid var(--line); border-radius:8px; padding:26px; margin-bottom:24px; scroll-margin-top:66px;}
   .panel h2{font-size:20px; color:var(--navy-deep); margin-bottom:4px;}
   .panel .desc{font-size:13px; color:var(--slate); margin-bottom:20px;}
   label{display:block; font-size:12.5px; font-weight:700; color:var(--navy-deep); margin-bottom:6px; letter-spacing:.02em; text-transform:uppercase;}
@@ -110,6 +111,36 @@
   .admin-tab:hover{color:#CFDDE2;}
   .admin-tab.active{color:var(--gold-light); border-bottom-color:var(--gold);}
 
+  /* ===== Sidebar navigation (Content tab) ===== */
+  .admin-layout{display:flex; align-items:flex-start; max-width:1180px; margin:0 auto;}
+  .admin-sidebar{
+    flex:0 0 216px; position:sticky; top:53px; align-self:flex-start;
+    background:var(--navy-deep); border-radius:10px; margin:28px 0 28px 20px;
+    padding:18px 0; max-height:calc(100vh - 90px); overflow-y:auto;
+  }
+  .admin-sidebar-title{
+    font-size:10.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+    color:#5B7580; padding:0 20px 12px;
+  }
+  .sidebar-link{
+    display:block; padding:10px 20px; font-size:13px; font-weight:600; color:#AEC1C7;
+    border-left:3px solid transparent; transition:color .15s ease, border-color .15s ease, background .15s ease;
+  }
+  .sidebar-link:hover{color:#fff; background:rgba(255,255,255,.04);}
+  .sidebar-link.active{color:var(--gold-light); border-left-color:var(--gold); background:rgba(246,205,110,.06);}
+  .admin-main{flex:1; min-width:0;}
+
+  @media (max-width:880px){
+    .admin-layout{flex-direction:column;}
+    .admin-sidebar{
+      flex:none; position:static; width:100%; margin:16px 20px 0; max-height:none;
+      display:flex; overflow-x:auto; overflow-y:visible; padding:10px 8px; gap:2px;
+    }
+    .admin-sidebar-title{display:none;}
+    .sidebar-link{white-space:nowrap; border-left:none; border-bottom:3px solid transparent; padding:8px 14px;}
+    .sidebar-link.active{border-left-color:transparent; border-bottom-color:var(--gold);}
+  }
+
   /* ===== Click tracking dashboard ===== */
   .tracking-stat-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:16px;}
   .tracking-stat-card{
@@ -173,6 +204,26 @@
 </div>
 
 <div id="tabPanelContent">
+<div class="admin-layout">
+
+  <nav class="admin-sidebar" id="adminSidebar">
+    <div class="admin-sidebar-title">Jump to Section</div>
+    <a href="#setupPanel" class="sidebar-link" data-panel="setupPanel">⚙️ Connection Setup</a>
+    <a href="#notificationsPanel" class="sidebar-link" data-panel="notificationsPanel">🔔 Notifications</a>
+    <a href="#layoutPanel" class="sidebar-link" data-panel="layoutPanel">🎨 Website Layout</a>
+    <a href="#feedbackPanel" class="sidebar-link" data-panel="feedbackPanel">Client Feedback</a>
+    <a href="#heroPanel" class="sidebar-link" data-panel="heroPanel">Hero Section</a>
+    <a href="#heroStatsPanel" class="sidebar-link" data-panel="heroStatsPanel">Hero Video &amp; Stats</a>
+    <a href="#whoPanel" class="sidebar-link" data-panel="whoPanel">Who I Am</a>
+    <a href="#productsPanel" class="sidebar-link" data-panel="productsPanel">Products &amp; Services</a>
+    <a href="#awardsPanel" class="sidebar-link" data-panel="awardsPanel">Awards &amp; Recognitions</a>
+    <a href="#quotationPanel" class="sidebar-link" data-panel="quotationPanel">Get a Sample Quotation</a>
+    <a href="#applyPanel" class="sidebar-link" data-panel="applyPanel">Apply Page</a>
+    <a href="#contactPanel" class="sidebar-link" data-panel="contactPanel">Contact / Footer</a>
+    <a href="#qrPanel" class="sidebar-link" data-panel="qrPanel">📱 QR Code</a>
+  </nav>
+
+  <main class="admin-main">
 <div class="wrap">
 
   <div class="panel" id="setupPanel" style="border-color:var(--gold); border-width:1.5px;">
@@ -186,14 +237,14 @@
     <div class="upload-status" id="scriptUrlStatus" style="margin-top:10px; display:block;"></div>
   </div>
 
-  <div class="panel">
+  <div class="panel" id="notificationsPanel">
     <h2>🔔 Notifications</h2>
     <div class="desc">Where new quotation requests and client feedback get emailed. This replaces editing Code.gs directly — set it once here and it applies immediately, no redeploying needed.</div>
     <label>Notification Email</label>
     <input type="text" id="notifyEmailInput" placeholder="you@example.com">
   </div>
 
-  <div class="panel">
+  <div class="panel" id="layoutPanel">
     <h2>🎨 Website Layout</h2>
     <div class="desc">Click a layout to switch your site's overall look — same content, links, and titles, just a different visual style. Click Save Changes afterward to make it live.</div>
     <div class="layout-picker" id="layoutPicker">
@@ -224,7 +275,7 @@
     </div>
   </div>
 
-  <div class="panel">
+  <div class="panel" id="feedbackPanel">
     <h2>Client Feedback &amp; Ratings</h2>
     <div class="desc">Reviews clients submit on your site land here first. Approve to make them go live, or reject to hide them.</div>
     <div style="display:flex; gap:8px; margin-bottom:16px;">
@@ -238,7 +289,7 @@
 
   <div class="note" id="configNote" style="display:none;">⚙️ <b>Not connected yet</b> — paste your Apps Script Web App URL into the Connection Setup box above to get started.</div>
 
-  <div class="panel">
+  <div class="panel" id="heroPanel">
     <h2>Hero Section</h2>
     <div class="desc">The top banner — your main photo, headline, and credentials.</div>
 
@@ -276,7 +327,7 @@
     <input type="text" id="advisorTagline" placeholder="Brighter lives, together.">
   </div>
 
-  <div class="panel">
+  <div class="panel" id="heroStatsPanel">
     <h2>Hero Video &amp; Stats Bar</h2>
     <div class="desc">The "Watch Video" link and the 4-stat row shown right below your hero photo.</div>
 
@@ -332,7 +383,7 @@
     </div>
   </div>
 
-  <div class="panel">
+  <div class="panel" id="whoPanel">
     <h2>Who I Am Section</h2>
     <div class="desc">Your story photos (shown as an auto-advancing slideshow — add as many as you like) and about text.</div>
 
@@ -347,28 +398,28 @@
     <textarea id="whoBody" style="min-height:110px;" placeholder="I believe that every Filipino deserves..."></textarea>
   </div>
 
-  <div class="panel">
+  <div class="panel" id="productsPanel">
     <h2>Products & Services</h2>
     <div class="desc">Each card needs a photo, name, and short description.</div>
     <div id="productsList"></div>
     <div class="add-row" id="addProductBtn">+ Add a product</div>
   </div>
 
-  <div class="panel">
+  <div class="panel" id="awardsPanel">
     <h2>Awards &amp; Recognitions</h2>
     <div class="desc">The badge row shown in the "Recognized for Excellence" section. Pick an icon and type the award name for each one.</div>
     <div id="awardsList"></div>
     <div class="add-row" id="addAwardBtn">+ Add an award</div>
   </div>
 
-  <div class="panel">
+  <div class="panel" id="quotationPanel">
     <h2>Get a Sample Quotation</h2>
     <div class="desc">After someone fills out the quotation request form on a product, they'll be sent here to continue the conversation.</div>
     <label>Messenger Link</label>
     <input type="text" id="messengerLink" placeholder="https://m.me/yourpagename">
   </div>
 
-  <div class="panel">
+  <div class="panel" id="applyPanel">
     <h2>Apply as a Financial Advisor Page</h2>
     <div class="desc">This content shows in the "Apply as a Financial Advisor" section of your site — it opens in a new tab scrolled straight to it, with a slideshow of team/experience photos plus embedded videos.</div>
 
@@ -390,7 +441,7 @@
     <div class="add-row" id="addApplyVideoBtn">+ Add a video</div>
   </div>
 
-  <div class="panel">
+  <div class="panel" id="contactPanel">
     <h2>Contact / Footer</h2>
     <div class="row2">
       <div>
@@ -428,6 +479,9 @@
   <div style="text-align:center; padding:30px 0 10px; font-size:11.5px; color:var(--slate); letter-spacing:.03em;">
     JCC BUSINESS SOLUTIONS | ALL RIGHTS RESERVED 2026
   </div>
+
+</div>
+  </main>
 
 </div>
 </div>
@@ -1548,6 +1602,48 @@ function loadTrackingSummary(){
       status.className = 'upload-status err';
     });
 }
+
+// ===== Sidebar: highlight the section currently in view while scrolling =====
+function initSidebarHighlight(){
+  var links = document.querySelectorAll('.sidebar-link');
+  if(!links.length) return;
+
+  var linkByPanelId = {};
+  links.forEach(function(link){
+    linkByPanelId[link.getAttribute('data-panel')] = link;
+  });
+
+  if('IntersectionObserver' in window){
+    var observer = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        var link = linkByPanelId[entry.target.id];
+        if(!link) return;
+        if(entry.isIntersecting){
+          links.forEach(function(l){ l.classList.remove('active'); });
+          link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-80px 0px -70% 0px', threshold: 0 });
+
+    Object.keys(linkByPanelId).forEach(function(panelId){
+      var panelEl = document.getElementById(panelId);
+      if(panelEl) observer.observe(panelEl);
+    });
+  }
+
+  // Keep the active pill scrolled into view on the mobile horizontal strip
+  links.forEach(function(link){
+    link.addEventListener('click', function(){
+      setTimeout(function(){
+        var active = document.querySelector('.sidebar-link.active');
+        if(active && window.innerWidth <= 880){
+          active.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }
+      }, 400);
+    });
+  });
+}
+initSidebarHighlight();
 
 initSetupPanel();
 drawQrPlaceholder();
