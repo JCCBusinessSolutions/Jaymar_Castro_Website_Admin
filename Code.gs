@@ -23,6 +23,10 @@ function doGet(e) {
     return jsonResponse_({ success: true, testimonials: getTestimonials_(false) });
   }
 
+  if (type === 'trackingSummary') {
+    return jsonResponse_({ success: true, summary: getTrackingSummary_() });
+  }
+
   var sheet = getSheet_();
   var json = sheet.getRange('A1').getValue();
   var content = json ? JSON.parse(json) : {};
@@ -71,6 +75,10 @@ function doPost(e) {
 
   if (action === 'deleteTestimonial') {
     return handleTestimonialDelete_(body);
+  }
+
+  if (action === 'trackEvent') {
+    return handleTrackEvent_(body);
   }
 
   return jsonResponse_({ success: false, error: 'Unknown action: ' + action });
@@ -205,6 +213,131 @@ function getTestimonialsSheet_() {
     sheet.getRange('A1:G1').setFontWeight('bold');
   }
   return sheet;
+}
+
+// ---------- CLICK TRACKING ----------
+var CLICK_TRACKING_SHEET_NAME = 'ClickTracking';
+var CLICK_TRACKING_HEADERS = [
+  'Timestamp', 'Event', 'Button/Element', 'Page', 'URL',
+  'Device', 'Browser', 'OS', 'Referrer',
+  'UTM Source', 'UTM Medium', 'UTM Campaign', 'Session ID'
+];
+
+function getClickTrackingSheet_() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(CLICK_TRACKING_SHEET_NAME);
+  if (!sheet) {
+    sheet = ss.insertSheet(CLICK_TRACKING_SHEET_NAME);
+    sheet.appendRow(CLICK_TRACKING_HEADERS);
+    sheet.setFrozenRows(1);
+    sheet.getRange(1, 1, 1, CLICK_TRACKING_HEADERS.length).setFontWeight('bold');
+  }
+  return sheet;
+}
+
+// Keeps stray/junk values from bloating the sheet — trims and caps length,
+// never throws (a tracking hiccup must never surface as an error).
+function sanitizeTrackingField_(val, maxLen) {
+  if (val === undefined || val === null) return '';
+  var s = String(val).replace(/[\r\n]+/g, ' ').trim();
+  return s.substring(0, maxLen || 200);
+}
+
+function handleTrackEvent_(body) {
+  try {
+    var d = body.data || {};
+
+    // Minimum validation — an event name is required, everything else is optional.
+    var eventName = sanitizeTrackingField_(d.event, 60);
+    if (!eventName) {
+      return jsonResponse_({ success: false, error: 'Missing event name' });
+    }
+
+    var sheet = getClickTrackingSheet_();
+    sheet.appendRow([
+      new Date(),
+      eventName,
+      sanitizeTrackingField_(d.element, 150),
+      sanitizeTrackingField_(d.page, 150),
+      sanitizeTrackingField_(d.url, 500),
+      sanitizeTrackingField_(d.device, 20),
+      sanitizeTrackingField_(d.browser, 40),
+      sanitizeTrackingField_(d.os, 40),
+      sanitizeTrackingField_(d.referrer, 300),
+      sanitizeTrackingField_(d.utmSource, 100),
+      sanitizeTrackingField_(d.utmMedium, 100),
+      sanitizeTrackingField_(d.utmCampaign, 100),
+      sanitizeTrackingField_(d.sessionId, 60)
+    ]);
+
+    return jsonResponse_({ success: true });
+  } catch (err) {
+    // A tracking failure must never be visible as a website error — this
+    // response isn't even read by sendBeacon() on the client, but keeping
+    // it safe/consistent in case a fetch() fallback is used instead.
+    return jsonResponse_({ success: false, error: err.message });
+  }
+}
+
+function getTrackingSummary_() {
+  var sheet = getClickTrackingSheet_();
+  var lastRow = sheet.getLastRow();
+  if (lastRow < 2) {
+    return {
+      totalClicks: 0, clicksToday: 0, clicksThisWeek: 0, clicksThisMonth: 0,
+      byButton: [], byEvent: [], byPage: [], byDevice: [], bySource: [], topCta: null
+    };
+  }
+
+  var values = sheet.getRange(2, 1, lastRow - 1, CLICK_TRACKING_HEADERS.length).getValues();
+  var now = new Date();
+  var startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  var startOfWeek = new Date(startOfToday.getTime() - (now.getDay() * 24 * 60 * 60 * 1000));
+  var startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  var total = values.length;
+  var today = 0, week = 0, month = 0;
+  var byButton = {}, byEvent = {}, byPage = {}, byDevice = {}, bySource = {};
+
+  values.forEach(function(row) {
+    var ts = row[0] instanceof Date ? row[0] : new Date(row[0]);
+    if (ts >= startOfToday) today++;
+    if (ts >= startOfWeek) week++;
+    if (ts >= startOfMonth) month++;
+
+    var eventName = row[1] || '(unknown)';
+    var buttonName = row[2] || '(unlabeled)';
+    var page = row[3] || '(unknown)';
+    var device = row[5] || '(unknown)';
+    var source = row[9] || row[8] || 'Direct'; // UTM Source, else Referrer, else Direct
+
+    byEvent[eventName] = (byEvent[eventName] || 0) + 1;
+    byButton[buttonName] = (byButton[buttonName] || 0) + 1;
+    byPage[page] = (byPage[page] || 0) + 1;
+    byDevice[device] = (byDevice[device] || 0) + 1;
+    bySource[source] = (bySource[source] || 0) + 1;
+  });
+
+  function toSortedArray(obj) {
+    return Object.keys(obj)
+      .map(function(k){ return { name: k, count: obj[k] }; })
+      .sort(function(a, b){ return b.count - a.count; });
+  }
+
+  var byButtonArr = toSortedArray(byButton);
+
+  return {
+    totalClicks: total,
+    clicksToday: today,
+    clicksThisWeek: week,
+    clicksThisMonth: month,
+    byButton: byButtonArr,
+    byEvent: toSortedArray(byEvent),
+    byPage: toSortedArray(byPage),
+    byDevice: toSortedArray(byDevice),
+    bySource: toSortedArray(bySource),
+    topCta: byButtonArr.length ? byButtonArr[0] : null
+  };
 }
 
 function handleTestimonialSubmit_(body) {
