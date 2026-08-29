@@ -129,16 +129,24 @@
   .sidebar-link:hover{color:#fff; background:rgba(255,255,255,.04);}
   .sidebar-link.active{color:var(--gold-light); border-left-color:var(--gold); background:rgba(246,205,110,.06);}
   .admin-main{flex:1; min-width:0;}
+  .sidebar-mobile-toggle{display:none;}
 
   @media (max-width:880px){
-    .admin-layout{flex-direction:column;}
-    .admin-sidebar{
-      flex:none; position:static; width:100%; margin:16px 20px 0; max-height:none;
-      display:flex; overflow-x:auto; overflow-y:visible; padding:10px 8px; gap:2px;
+    .admin-layout{display:block;}
+    .sidebar-mobile-toggle{
+      display:flex; align-items:center; justify-content:center; width:100%;
+      margin:16px 20px 0; padding:12px; background:var(--navy-deep); border:none; border-radius:8px;
+      color:var(--gold-light); font-size:20px; cursor:pointer; width:calc(100% - 40px);
     }
+    .admin-sidebar{
+      flex:none; position:static; width:calc(100% - 40px); margin:0 20px; max-height:0;
+      overflow:hidden; padding:0; border-radius:0 0 8px 8px; opacity:0;
+      transition:max-height .25s ease, opacity .2s ease, padding .25s ease;
+    }
+    .admin-sidebar.mobile-open{max-height:600px; opacity:1; padding:8px 0 12px;}
     .admin-sidebar-title{display:none;}
-    .sidebar-link{white-space:nowrap; border-left:none; border-bottom:3px solid transparent; padding:8px 14px;}
-    .sidebar-link.active{border-left-color:transparent; border-bottom-color:var(--gold);}
+    .sidebar-link{white-space:normal; border-left:3px solid transparent; padding:11px 20px;}
+    .sidebar-link.active{border-left-color:var(--gold); border-bottom:none; background:rgba(246,205,110,.06);}
   }
 
   /* ===== Click tracking dashboard ===== */
@@ -205,6 +213,8 @@
 
 <div id="tabPanelContent">
 <div class="admin-layout">
+
+  <button class="sidebar-mobile-toggle" id="sidebarToggleBtn" aria-label="Open section menu">☰</button>
 
   <nav class="admin-sidebar" id="adminSidebar">
     <div class="admin-sidebar-title">Jump to Section</div>
@@ -1631,17 +1641,29 @@ function initSidebarHighlight(){
     });
   }
 
-  // Keep the active pill scrolled into view on the mobile horizontal strip
-  links.forEach(function(link){
-    link.addEventListener('click', function(){
-      setTimeout(function(){
-        var active = document.querySelector('.sidebar-link.active');
-        if(active && window.innerWidth <= 880){
-          active.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-        }
-      }, 400);
+  // Mobile hamburger toggle — same open/close pattern as the main site's mobile menu
+  var sidebar = document.getElementById('adminSidebar');
+  var toggleBtn = document.getElementById('sidebarToggleBtn');
+  if(sidebar && toggleBtn){
+    toggleBtn.onclick = function(){
+      var isOpen = sidebar.classList.toggle('mobile-open');
+      toggleBtn.textContent = isOpen ? '✕' : '☰';
+    };
+    // Selecting a section closes the menu right away
+    links.forEach(function(link){
+      link.addEventListener('click', function(){
+        sidebar.classList.remove('mobile-open');
+        toggleBtn.textContent = '☰';
+      });
     });
-  });
+    // Clicking anywhere outside also closes it
+    document.addEventListener('click', function(e){
+      if(sidebar.classList.contains('mobile-open') && !sidebar.contains(e.target) && e.target !== toggleBtn){
+        sidebar.classList.remove('mobile-open');
+        toggleBtn.textContent = '☰';
+      }
+    });
+  }
 }
 initSidebarHighlight();
 
