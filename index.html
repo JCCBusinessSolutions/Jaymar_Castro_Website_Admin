@@ -64,30 +64,6 @@
   .layout-preview-3 .lp-lines span:nth-child(1){width:95%; background:#0E3846; height:10px;}
   .layout-preview-3 .lp-lines span:nth-child(2){width:80%; height:8px;}
   .layout-preview-3 .lp-lines span:nth-child(3){width:60%; background:#ECAB23; height:6px;}
-  /* Golden Grace: cream hero, arched gold portrait cue */
-  .layout-preview-4 .lp-hero{background:linear-gradient(120deg,#FBF4E6,#FBF4E6 55%,#E4A93A 130%);}
-  .layout-preview-4 .lp-lines span:nth-child(1){width:65%; background:#15304C;}
-  .layout-preview-4 .lp-lines span:nth-child(2){width:88%; background:#E4A93A;}
-  .layout-preview-4 .lp-lines span:nth-child(3){width:45%; background:#15304C; height:7px;}
-  /* Executive Navy: deep midnight navy, restrained champagne gold */
-  .layout-preview-5 .lp-hero{background:linear-gradient(120deg,#0A1E30,#132C42 60%,#C9A227 135%);}
-  .layout-preview-5 .lp-lines span:nth-child(1){width:70%; background:#0A1E30; border-radius:0;}
-  .layout-preview-5 .lp-lines span:nth-child(2){width:90%; border-radius:0;}
-  .layout-preview-5 .lp-lines span:nth-child(3){width:50%; background:#C9A227; height:7px; border-radius:0;}
-  /* Reserved slot — muted placeholder, not yet designed */
-  /* Blush Prestige: ivory hero, navy/blush/gold */
-  .layout-preview-6 .lp-hero{background:linear-gradient(120deg,#FBF7F1,#FBF7F1 50%,#F4DEE1 78%,#CBA135 130%);}
-  .layout-preview-6 .lp-lines span:nth-child(1){width:64%; background:#16283F;}
-  .layout-preview-6 .lp-lines span:nth-child(2){width:86%; background:#C68C96;}
-  .layout-preview-6 .lp-lines span:nth-child(3){width:44%; background:#CBA135; height:7px;}
-  .layout-option.coming-soon{opacity:.62; cursor:not-allowed;}
-  .layout-option.coming-soon:hover{transform:none; box-shadow:none;}
-  .layout-option.coming-soon .layout-option-name{display:flex; align-items:center; gap:6px;}
-  .layout-option.coming-soon .soon-tag{
-    font-size:9px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
-    color:var(--slate); background:var(--paper); border:1px solid var(--line);
-    border-radius:20px; padding:2px 7px;
-  }
   @media (max-width:640px){
     .layout-picker{grid-template-columns:1fr;}
   }
@@ -123,6 +99,43 @@
   }
   .save-status{font-size:12.5px; color:#B9C9CE;}
   .save-status.ok{color:var(--gold-light);}
+
+  /* ===== Tab navigation ===== */
+  .admin-tabs{background:var(--navy-deep); position:sticky; top:0; z-index:70;}
+  .admin-tabs-inner{max-width:900px; margin:0 auto; padding:0 24px; display:flex; gap:4px;}
+  .admin-tab{
+    background:none; border:none; color:#8AA3AC; padding:16px 18px; font-size:13.5px; font-weight:700;
+    cursor:pointer; border-bottom:3px solid transparent; transition:color .15s ease, border-color .15s ease;
+  }
+  .admin-tab:hover{color:#CFDDE2;}
+  .admin-tab.active{color:var(--gold-light); border-bottom-color:var(--gold);}
+
+  /* ===== Click tracking dashboard ===== */
+  .tracking-stat-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:16px;}
+  .tracking-stat-card{
+    background:var(--cream); border:1px solid var(--line); border-radius:8px; padding:20px 16px; text-align:center;
+  }
+  .tracking-stat-num{font-family:'Playfair Display',serif; font-size:32px; font-weight:700; color:var(--navy-deep);}
+  .tracking-stat-label{font-size:11.5px; color:var(--slate); text-transform:uppercase; letter-spacing:.04em; margin-top:4px;}
+  .top-cta-card{
+    background:linear-gradient(135deg,var(--gold-light),var(--gold) 55%,var(--gold-deep)); border-radius:8px;
+    padding:22px 24px; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+  }
+  .top-cta-name{font-size:16px; font-weight:700; color:var(--navy-deep);}
+  .top-cta-count{font-family:'Playfair Display',serif; font-size:26px; font-weight:700; color:var(--navy-deep);}
+  .tracking-breakdown-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:20px; max-width:900px; margin:0 auto 20px;}
+  .breakdown-list{display:flex; flex-direction:column; gap:8px;}
+  .breakdown-row{display:flex; align-items:center; gap:10px; font-size:12.5px;}
+  .breakdown-row-name{flex:0 0 auto; min-width:110px; max-width:160px; color:var(--navy-deep); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .breakdown-row-bar{flex:1; height:8px; background:var(--line); border-radius:4px; overflow:hidden;}
+  .breakdown-row-bar-fill{height:100%; background:linear-gradient(90deg,var(--gold-deep),var(--gold));}
+  .breakdown-row-count{flex:0 0 auto; color:var(--slate); font-weight:700; min-width:28px; text-align:right;}
+  .breakdown-empty{font-size:12.5px; color:var(--slate); padding:8px 0;}
+  @media (max-width:720px){
+    .tracking-stat-grid{grid-template-columns:repeat(2,1fr);}
+    .tracking-breakdown-grid{grid-template-columns:1fr;}
+  }
+
   .note{font-size:12px; color:var(--slate); background:var(--cream); border:1px solid var(--line); padding:10px 14px; border-radius:6px; margin-bottom:18px;}
   .testi-item{border:1px solid var(--line); border-radius:8px; padding:16px 18px; margin-bottom:12px; background:#fff;}
   .testi-item-top{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:8px;}
@@ -152,6 +165,14 @@
   </div>
 </header>
 
+<div class="admin-tabs">
+  <div class="admin-tabs-inner">
+    <button class="admin-tab active" id="tabBtnContent">📝 Content</button>
+    <button class="admin-tab" id="tabBtnTracking">📊 Click Tracking</button>
+  </div>
+</div>
+
+<div id="tabPanelContent">
 <div class="wrap">
 
   <div class="panel" id="setupPanel" style="border-color:var(--gold); border-width:1.5px;">
@@ -199,30 +220,6 @@
         </div>
         <div class="layout-option-name">Bold Editorial</div>
         <div class="layout-option-desc">Oversized type, dramatic spacing, magazine-style presence</div>
-      </div>
-      <div class="layout-option" data-value="4">
-        <div class="layout-preview layout-preview-4">
-          <div class="lp-hero"></div>
-          <div class="lp-lines"><span></span><span></span><span></span></div>
-        </div>
-        <div class="layout-option-name">Golden Grace</div>
-        <div class="layout-option-desc">Cream & gold, arched portrait frame, bright and editorial</div>
-      </div>
-      <div class="layout-option" data-value="5">
-        <div class="layout-preview layout-preview-5">
-          <div class="lp-hero"></div>
-          <div class="lp-lines"><span></span><span></span><span></span></div>
-        </div>
-        <div class="layout-option-name">Executive Navy</div>
-        <div class="layout-option-desc">Midnight navy & champagne gold, executive and restrained</div>
-      </div>
-      <div class="layout-option" data-value="6">
-        <div class="layout-preview layout-preview-6">
-          <div class="lp-hero"></div>
-          <div class="lp-lines"><span></span><span></span><span></span></div>
-        </div>
-        <div class="layout-option-name">Blush Prestige</div>
-        <div class="layout-option-desc">Ivory & navy with soft blush and champagne gold, private-client warmth</div>
       </div>
     </div>
   </div>
@@ -432,6 +429,76 @@
     JCC BUSINESS SOLUTIONS | ALL RIGHTS RESERVED 2026
   </div>
 
+</div>
+</div>
+
+<div id="tabPanelTracking" style="display:none;">
+<div class="wrap">
+
+  <div class="panel">
+    <h2>📊 Click Tracking Dashboard</h2>
+    <div class="desc">Live counts of visitor clicks and form submissions, pulled from the "ClickTracking" tab in your Google Sheet.</div>
+    <button class="btn btn-outline btn-small" id="refreshTrackingBtn">Refresh</button>
+    <span class="upload-status" id="trackingStatus" style="margin-left:10px;"></span>
+  </div>
+
+  <div class="panel">
+    <div class="tracking-stat-grid">
+      <div class="tracking-stat-card">
+        <div class="tracking-stat-num" id="statTotalClicks">—</div>
+        <div class="tracking-stat-label">Total Clicks</div>
+      </div>
+      <div class="tracking-stat-card">
+        <div class="tracking-stat-num" id="statClicksToday">—</div>
+        <div class="tracking-stat-label">Today</div>
+      </div>
+      <div class="tracking-stat-card">
+        <div class="tracking-stat-num" id="statClicksWeek">—</div>
+        <div class="tracking-stat-label">This Week</div>
+      </div>
+      <div class="tracking-stat-card">
+        <div class="tracking-stat-num" id="statClicksMonth">—</div>
+        <div class="tracking-stat-label">This Month</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="topCtaPanel" style="display:none;">
+    <h2>🏆 Top-Performing CTA</h2>
+    <div class="top-cta-card">
+      <div class="top-cta-name" id="topCtaName">—</div>
+      <div class="top-cta-count" id="topCtaCount">—</div>
+    </div>
+  </div>
+
+  <div class="tracking-breakdown-grid">
+    <div class="panel">
+      <h2>By Button / Element</h2>
+      <div class="breakdown-list" id="breakdownButton"></div>
+    </div>
+    <div class="panel">
+      <h2>By Event Type</h2>
+      <div class="breakdown-list" id="breakdownEvent"></div>
+    </div>
+    <div class="panel">
+      <h2>By Page</h2>
+      <div class="breakdown-list" id="breakdownPage"></div>
+    </div>
+    <div class="panel">
+      <h2>By Device</h2>
+      <div class="breakdown-list" id="breakdownDevice"></div>
+    </div>
+    <div class="panel">
+      <h2>By Traffic Source</h2>
+      <div class="breakdown-list" id="breakdownSource"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="desc" style="margin-bottom:0;">Want the raw click-by-click log (timestamps, device, browser, UTM params, session IDs)? Open your Google Sheet and check the <b>"ClickTracking"</b> tab directly.</div>
+  </div>
+
+</div>
 </div>
 
 <div class="save-bar">
@@ -827,7 +894,6 @@ function renderLayoutPicker(){
   var options = document.querySelectorAll('#layoutPicker .layout-option');
   options.forEach(function(opt){
     opt.classList.toggle('active', opt.getAttribute('data-value') === (state.layoutStyle || '1'));
-    if(opt.classList.contains('coming-soon')) return; // reserved slot — not selectable yet
     opt.onclick = function(){
       state.layoutStyle = opt.getAttribute('data-value');
       options.forEach(function(o){ o.classList.remove('active'); });
@@ -1379,6 +1445,109 @@ document.getElementById('downloadQrBtn').onclick = function(){
     status.className = 'upload-status err';
   }
 };
+
+// ===== Tab switching =====
+var trackingLoadedOnce = false;
+
+function switchTab(tab){
+  var contentPanel = document.getElementById('tabPanelContent');
+  var trackingPanel = document.getElementById('tabPanelTracking');
+  var contentBtn = document.getElementById('tabBtnContent');
+  var trackingBtn = document.getElementById('tabBtnTracking');
+  var saveBar = document.querySelector('.save-bar');
+
+  if(tab === 'tracking'){
+    contentPanel.style.display = 'none';
+    trackingPanel.style.display = '';
+    contentBtn.classList.remove('active');
+    trackingBtn.classList.add('active');
+    if(saveBar) saveBar.style.display = 'none'; // nothing to "save" on an analytics-only tab
+    if(!trackingLoadedOnce){
+      trackingLoadedOnce = true;
+      loadTrackingSummary();
+    }
+  } else {
+    contentPanel.style.display = '';
+    trackingPanel.style.display = 'none';
+    contentBtn.classList.add('active');
+    trackingBtn.classList.remove('active');
+    if(saveBar) saveBar.style.display = '';
+  }
+}
+
+document.getElementById('tabBtnContent').onclick = function(){ switchTab('content'); };
+document.getElementById('tabBtnTracking').onclick = function(){ switchTab('tracking'); };
+document.getElementById('refreshTrackingBtn').onclick = loadTrackingSummary;
+
+// ===== Click tracking dashboard =====
+function renderBreakdownList(containerId, items, maxRows){
+  var container = document.getElementById(containerId);
+  container.innerHTML = '';
+  if(!items || !items.length){
+    container.innerHTML = '<div class="breakdown-empty">No data yet.</div>';
+    return;
+  }
+  var rows = items.slice(0, maxRows || 8);
+  var maxCount = rows[0].count || 1;
+  rows.forEach(function(item){
+    var row = document.createElement('div');
+    row.className = 'breakdown-row';
+    var pct = Math.max(6, Math.round((item.count / maxCount) * 100));
+    row.innerHTML =
+      '<div class="breakdown-row-name" title="' + item.name + '">' + item.name + '</div>' +
+      '<div class="breakdown-row-bar"><div class="breakdown-row-bar-fill" style="width:' + pct + '%;"></div></div>' +
+      '<div class="breakdown-row-count">' + item.count + '</div>';
+    container.appendChild(row);
+  });
+}
+
+function loadTrackingSummary(){
+  if(!scriptConfigured()){
+    document.getElementById('trackingStatus').textContent = 'Connect your Web App URL first (Content tab → Connection Setup).';
+    document.getElementById('trackingStatus').className = 'upload-status err';
+    return;
+  }
+  var status = document.getElementById('trackingStatus');
+  status.textContent = 'Loading…';
+  status.className = 'upload-status uploading';
+
+  fetch(SCRIPT_URL + '?type=trackingSummary')
+    .then(function(r){ return r.json(); })
+    .then(function(res){
+      if(!res.success){
+        status.textContent = 'Could not load tracking data.';
+        status.className = 'upload-status err';
+        return;
+      }
+      var s = res.summary;
+      document.getElementById('statTotalClicks').textContent = s.totalClicks;
+      document.getElementById('statClicksToday').textContent = s.clicksToday;
+      document.getElementById('statClicksWeek').textContent = s.clicksThisWeek;
+      document.getElementById('statClicksMonth').textContent = s.clicksThisMonth;
+
+      var topCtaPanel = document.getElementById('topCtaPanel');
+      if(s.topCta){
+        topCtaPanel.style.display = '';
+        document.getElementById('topCtaName').textContent = s.topCta.name;
+        document.getElementById('topCtaCount').textContent = s.topCta.count + ' clicks';
+      } else {
+        topCtaPanel.style.display = 'none';
+      }
+
+      renderBreakdownList('breakdownButton', s.byButton);
+      renderBreakdownList('breakdownEvent', s.byEvent);
+      renderBreakdownList('breakdownPage', s.byPage);
+      renderBreakdownList('breakdownDevice', s.byDevice);
+      renderBreakdownList('breakdownSource', s.bySource);
+
+      status.textContent = 'Updated ' + new Date().toLocaleTimeString();
+      status.className = 'upload-status done';
+    })
+    .catch(function(){
+      status.textContent = 'Could not load — check your connection.';
+      status.className = 'upload-status err';
+    });
+}
 
 initSetupPanel();
 drawQrPlaceholder();
