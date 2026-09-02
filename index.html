@@ -20,6 +20,7 @@
     --danger:#C0392B; --ok:#2E7D46;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
   body{font-family:'DM Sans',sans-serif; background:var(--cream); color:var(--ink); padding-bottom:80px;}
   h1,h2,h3{font-family:'Playfair Display',serif;}
   header{background:var(--navy-deep); color:#fff; padding:20px 24px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; position:sticky; top:0; z-index:50;}
@@ -27,7 +28,7 @@
   header .sub{font-size:12px; color:#B9C9CE; margin-top:2px; font-family:'DM Sans',sans-serif;}
   .header-actions{display:flex; gap:10px; flex-wrap:wrap;}
   .wrap{max-width:960px; margin:0 auto; padding:28px 20px;}
-  .panel{background:var(--paper); border:1px solid var(--line); border-radius:8px; padding:26px; margin-bottom:24px;}
+  .panel{background:var(--paper); border:1px solid var(--line); border-radius:8px; padding:26px; margin-bottom:24px; scroll-margin-top:66px;}
   .panel h2{font-size:20px; color:var(--navy-deep); margin-bottom:4px;}
   .panel .desc{font-size:13px; color:var(--slate); margin-bottom:20px;}
   label{display:block; font-size:12.5px; font-weight:700; color:var(--navy-deep); margin-bottom:6px; letter-spacing:.02em; text-transform:uppercase;}
@@ -64,6 +65,18 @@
   .layout-preview-3 .lp-lines span:nth-child(1){width:95%; background:#0E3846; height:10px;}
   .layout-preview-3 .lp-lines span:nth-child(2){width:80%; height:8px;}
   .layout-preview-3 .lp-lines span:nth-child(3){width:60%; background:#ECAB23; height:6px;}
+  .layout-preview-4 .lp-hero{background:linear-gradient(120deg,#FBF4E6,#FBF4E6 55%,#E4A93A 130%);}
+  .layout-preview-4 .lp-lines span:nth-child(1){width:65%; background:#15304C;}
+  .layout-preview-4 .lp-lines span:nth-child(2){width:88%; background:#E4A93A;}
+  .layout-preview-4 .lp-lines span:nth-child(3){width:45%; background:#15304C; height:7px;}
+  .layout-preview-5 .lp-hero{background:linear-gradient(120deg,#0A1E30,#132C42 60%,#C9A227 135%);}
+  .layout-preview-5 .lp-lines span:nth-child(1){width:70%; background:#0A1E30; border-radius:0;}
+  .layout-preview-5 .lp-lines span:nth-child(2){width:90%; border-radius:0;}
+  .layout-preview-5 .lp-lines span:nth-child(3){width:50%; background:#C9A227; height:7px; border-radius:0;}
+  .layout-preview-6 .lp-hero{background:linear-gradient(120deg,#FBF7F1,#FBF7F1 50%,#F4DEE1 78%,#CBA135 130%);}
+  .layout-preview-6 .lp-lines span:nth-child(1){width:64%; background:#16283F;}
+  .layout-preview-6 .lp-lines span:nth-child(2){width:86%; background:#C68C96;}
+  .layout-preview-6 .lp-lines span:nth-child(3){width:44%; background:#CBA135; height:7px;}
   @media (max-width:640px){
     .layout-picker{grid-template-columns:1fr;}
   }
@@ -97,8 +110,89 @@
     display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; z-index:60;
     box-shadow:0 -4px 20px rgba(0,0,0,.2);
   }
+  @media (hover:hover) and (pointer:fine){
+    .save-bar{transform:translateY(100%); transition:transform .25s ease;}
+    .save-bar.reveal{transform:translateY(0);}
+  }
   .save-status{font-size:12.5px; color:#B9C9CE;}
   .save-status.ok{color:var(--gold-light);}
+
+  /* ===== Tab navigation ===== */
+  .admin-tabs{background:var(--navy-deep); position:sticky; top:0; z-index:70;}
+  .admin-tabs-inner{max-width:900px; margin:0 auto; padding:0 24px; display:flex; gap:4px;}
+  .admin-tab{
+    background:none; border:none; color:#8AA3AC; padding:12px 18px; font-size:13.5px; font-weight:700;
+    cursor:pointer; border-radius:8px 8px 0 0; transition:color .15s ease, background .15s ease; margin-top:6px;
+  }
+  .admin-tab:hover{color:#CFDDE2;}
+  .admin-tab.active{color:var(--gold-light); background:rgba(246,205,110,.1);}
+
+  /* ===== Sidebar navigation (Content tab) ===== */
+  .admin-layout{display:flex; align-items:flex-start; max-width:1180px; margin:0 auto;}
+  .admin-sidebar{
+    flex:0 0 216px; position:sticky; top:53px; align-self:flex-start;
+    background:var(--navy-deep); border-radius:10px; margin:28px 0 28px 20px;
+    padding:18px 0; max-height:calc(100vh - 90px); overflow-y:auto;
+  }
+  .admin-sidebar-title{
+    font-size:10.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+    color:#5B7580; padding:0 20px 12px;
+  }
+  .sidebar-link{
+    display:block; padding:10px 20px; font-size:13px; font-weight:600; color:#AEC1C7;
+    border-left:3px solid transparent; transition:color .15s ease, border-color .15s ease, background .15s ease;
+    text-decoration:none;
+  }
+  .sidebar-link:hover{color:#fff; background:rgba(255,255,255,.04);}
+  .sidebar-link.active{color:var(--gold-light); border-left-color:var(--gold); background:rgba(246,205,110,.06);}
+  .admin-main{flex:1; min-width:0;}
+  .sidebar-mobile-toggle{display:none;}
+
+  @media (max-width:880px){
+    .admin-layout{display:block;}
+    .sidebar-mobile-toggle{
+      display:flex; align-items:center; justify-content:center;
+      margin:16px 0 0 20px; padding:0; width:44px; height:44px;
+      background:var(--navy-deep); border:none; border-radius:8px;
+      color:var(--gold-light); font-size:19px; cursor:pointer;
+    }
+    .admin-sidebar{
+      flex:none; position:static; width:calc(100% - 40px); margin:0 20px; max-height:0;
+      overflow:hidden; padding:0; border-radius:0 0 8px 8px; opacity:0;
+      transition:max-height .25s ease, opacity .2s ease, padding .25s ease;
+    }
+    .admin-sidebar.mobile-open{max-height:600px; opacity:1; padding:8px 0 12px;}
+    .admin-sidebar-title{display:none;}
+    .sidebar-link{white-space:normal; border-left:3px solid transparent; padding:11px 20px;}
+    .sidebar-link.active{border-left-color:var(--gold); border-bottom:none; background:rgba(246,205,110,.06);}
+  }
+
+  /* ===== Click tracking dashboard ===== */
+  .tracking-stat-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:16px;}
+  .tracking-stat-card{
+    background:var(--cream); border:1px solid var(--line); border-radius:8px; padding:20px 16px; text-align:center;
+  }
+  .tracking-stat-num{font-family:'Playfair Display',serif; font-size:32px; font-weight:700; color:var(--navy-deep);}
+  .tracking-stat-label{font-size:11.5px; color:var(--slate); text-transform:uppercase; letter-spacing:.04em; margin-top:4px;}
+  .top-cta-card{
+    background:linear-gradient(135deg,var(--gold-light),var(--gold) 55%,var(--gold-deep)); border-radius:8px;
+    padding:22px 24px; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+  }
+  .top-cta-name{font-size:16px; font-weight:700; color:var(--navy-deep);}
+  .top-cta-count{font-family:'Playfair Display',serif; font-size:26px; font-weight:700; color:var(--navy-deep);}
+  .tracking-breakdown-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:20px; max-width:900px; margin:0 auto 20px;}
+  .breakdown-list{display:flex; flex-direction:column; gap:8px;}
+  .breakdown-row{display:flex; align-items:center; gap:10px; font-size:12.5px;}
+  .breakdown-row-name{flex:0 0 auto; min-width:110px; max-width:160px; color:var(--navy-deep); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .breakdown-row-bar{flex:1; height:8px; background:var(--line); border-radius:4px; overflow:hidden;}
+  .breakdown-row-bar-fill{height:100%; background:linear-gradient(90deg,var(--gold-deep),var(--gold));}
+  .breakdown-row-count{flex:0 0 auto; color:var(--slate); font-weight:700; min-width:28px; text-align:right;}
+  .breakdown-empty{font-size:12.5px; color:var(--slate); padding:8px 0;}
+  @media (max-width:720px){
+    .tracking-stat-grid{grid-template-columns:repeat(2,1fr);}
+    .tracking-breakdown-grid{grid-template-columns:1fr;}
+  }
+
   .note{font-size:12px; color:var(--slate); background:var(--cream); border:1px solid var(--line); padding:10px 14px; border-radius:6px; margin-bottom:18px;}
   .testi-item{border:1px solid var(--line); border-radius:8px; padding:16px 18px; margin-bottom:12px; background:#fff;}
   .testi-item-top{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:8px;}
@@ -128,6 +222,36 @@
   </div>
 </header>
 
+<div class="admin-tabs">
+  <div class="admin-tabs-inner">
+    <button class="admin-tab active" id="tabBtnContent"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px; margin-right:6px;"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Content</button>
+    <button class="admin-tab" id="tabBtnTracking"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px; margin-right:6px;"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Click Tracking</button>
+  </div>
+</div>
+
+<div id="tabPanelContent">
+<div class="admin-layout">
+
+  <button class="sidebar-mobile-toggle" id="sidebarToggleBtn" aria-label="Open section menu">☰</button>
+
+  <nav class="admin-sidebar" id="adminSidebar">
+    <div class="admin-sidebar-title">Jump to Section</div>
+    <a href="#setupPanel" class="sidebar-link" data-panel="setupPanel"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:8px; flex-shrink:0;"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></svg>Connection Setup</a>
+    <a href="#notificationsPanel" class="sidebar-link" data-panel="notificationsPanel"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:8px; flex-shrink:0;"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>Notifications</a>
+    <a href="#layoutPanel" class="sidebar-link" data-panel="layoutPanel"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:8px; flex-shrink:0;"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/></svg>Website Layout</a>
+    <a href="#feedbackPanel" class="sidebar-link" data-panel="feedbackPanel"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:8px; flex-shrink:0;"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.4 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>Client Feedback</a>
+    <a href="#heroPanel" class="sidebar-link" data-panel="heroPanel"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:8px; flex-shrink:0;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>Hero Section</a>
+    <a href="#heroStatsPanel" class="sidebar-link" data-panel="heroStatsPanel"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:8px; flex-shrink:0;"><path d="M3 3v18h18"/><path d="M18 9l-5 5-3-3-4 4"/></svg>Hero Video &amp; Stats</a>
+    <a href="#whoPanel" class="sidebar-link" data-panel="whoPanel"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:8px; flex-shrink:0;"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>Who I Am</a>
+    <a href="#productsPanel" class="sidebar-link" data-panel="productsPanel"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:8px; flex-shrink:0;"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Products &amp; Services</a>
+    <a href="#awardsPanel" class="sidebar-link" data-panel="awardsPanel"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:8px; flex-shrink:0;"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4z"/><path d="M7 5H4a3 3 0 0 0 3 5M17 5h3a3 3 0 0 1-3 5"/></svg>Awards &amp; Recognitions</a>
+    <a href="#quotationPanel" class="sidebar-link" data-panel="quotationPanel"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:8px; flex-shrink:0;"><path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><path d="M9 13h6M9 17h6M9 9h2"/></svg>Get a Sample Quotation</a>
+    <a href="#applyPanel" class="sidebar-link" data-panel="applyPanel"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:8px; flex-shrink:0;"><circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.5 3-6.5 7-6.5s7 3 7 6.5"/><path d="M18 8v6M15 11h6"/></svg>Apply Page</a>
+    <a href="#contactPanel" class="sidebar-link" data-panel="contactPanel"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:8px; flex-shrink:0;"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.4 2.1L8 9.9a16 16 0 0 0 6 6l1.4-1.4a2 2 0 0 1 2.1-.4c.9.3 1.8.5 2.7.6a2 2 0 0 1 1.8 2.2z"/></svg>Contact / Footer</a>
+    <a href="#qrPanel" class="sidebar-link" data-panel="qrPanel"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px; margin-right:8px; flex-shrink:0;"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><line x1="14" y1="14" x2="14" y2="21"/><line x1="21" y1="14" x2="21" y2="21"/><line x1="17.5" y1="14" x2="17.5" y2="17.5"/><line x1="14" y1="17.5" x2="21" y2="17.5"/></svg>QR Code</a>
+  </nav>
+
+  <main class="admin-main">
 <div class="wrap">
 
   <div class="panel" id="setupPanel" style="border-color:var(--gold); border-width:1.5px;">
@@ -141,14 +265,14 @@
     <div class="upload-status" id="scriptUrlStatus" style="margin-top:10px; display:block;"></div>
   </div>
 
-  <div class="panel">
+  <div class="panel" id="notificationsPanel">
     <h2>🔔 Notifications</h2>
     <div class="desc">Where new quotation requests and client feedback get emailed. This replaces editing Code.gs directly — set it once here and it applies immediately, no redeploying needed.</div>
     <label>Notification Email</label>
     <input type="text" id="notifyEmailInput" placeholder="you@example.com">
   </div>
 
-  <div class="panel">
+  <div class="panel" id="layoutPanel">
     <h2>🎨 Website Layout</h2>
     <div class="desc">Click a layout to switch your site's overall look — same content, links, and titles, just a different visual style. Click Save Changes afterward to make it live.</div>
     <div class="layout-picker" id="layoutPicker">
@@ -176,10 +300,34 @@
         <div class="layout-option-name">Bold Editorial</div>
         <div class="layout-option-desc">Oversized type, dramatic spacing, magazine-style presence</div>
       </div>
+      <div class="layout-option" data-value="4">
+        <div class="layout-preview layout-preview-4">
+          <div class="lp-hero"></div>
+          <div class="lp-lines"><span></span><span></span><span></span></div>
+        </div>
+        <div class="layout-option-name">Golden Grace</div>
+        <div class="layout-option-desc">Cream & gold, arched portrait frame, bright and editorial</div>
+      </div>
+      <div class="layout-option" data-value="5">
+        <div class="layout-preview layout-preview-5">
+          <div class="lp-hero"></div>
+          <div class="lp-lines"><span></span><span></span><span></span></div>
+        </div>
+        <div class="layout-option-name">Executive Navy</div>
+        <div class="layout-option-desc">Midnight navy & champagne gold, executive and restrained</div>
+      </div>
+      <div class="layout-option" data-value="6">
+        <div class="layout-preview layout-preview-6">
+          <div class="lp-hero"></div>
+          <div class="lp-lines"><span></span><span></span><span></span></div>
+        </div>
+        <div class="layout-option-name">Blush Prestige</div>
+        <div class="layout-option-desc">Ivory & navy with soft blush and champagne gold, private-client warmth</div>
+      </div>
     </div>
   </div>
 
-  <div class="panel">
+  <div class="panel" id="feedbackPanel">
     <h2>Client Feedback &amp; Ratings</h2>
     <div class="desc">Reviews clients submit on your site land here first. Approve to make them go live, or reject to hide them.</div>
     <div style="display:flex; gap:8px; margin-bottom:16px;">
@@ -193,7 +341,7 @@
 
   <div class="note" id="configNote" style="display:none;">⚙️ <b>Not connected yet</b> — paste your Apps Script Web App URL into the Connection Setup box above to get started.</div>
 
-  <div class="panel">
+  <div class="panel" id="heroPanel">
     <h2>Hero Section</h2>
     <div class="desc">The top banner — your main photo, headline, and credentials.</div>
 
@@ -231,7 +379,7 @@
     <input type="text" id="advisorTagline" placeholder="Brighter lives, together.">
   </div>
 
-  <div class="panel">
+  <div class="panel" id="heroStatsPanel">
     <h2>Hero Video &amp; Stats Bar</h2>
     <div class="desc">The "Watch Video" link and the 4-stat row shown right below your hero photo.</div>
 
@@ -287,7 +435,7 @@
     </div>
   </div>
 
-  <div class="panel">
+  <div class="panel" id="whoPanel">
     <h2>Who I Am Section</h2>
     <div class="desc">Your story photos (shown as an auto-advancing slideshow — add as many as you like) and about text.</div>
 
@@ -302,28 +450,28 @@
     <textarea id="whoBody" style="min-height:110px;" placeholder="I believe that every Filipino deserves..."></textarea>
   </div>
 
-  <div class="panel">
+  <div class="panel" id="productsPanel">
     <h2>Products & Services</h2>
     <div class="desc">Each card needs a photo, name, and short description.</div>
     <div id="productsList"></div>
     <div class="add-row" id="addProductBtn">+ Add a product</div>
   </div>
 
-  <div class="panel">
+  <div class="panel" id="awardsPanel">
     <h2>Awards &amp; Recognitions</h2>
     <div class="desc">The badge row shown in the "Recognized for Excellence" section. Pick an icon and type the award name for each one.</div>
     <div id="awardsList"></div>
     <div class="add-row" id="addAwardBtn">+ Add an award</div>
   </div>
 
-  <div class="panel">
+  <div class="panel" id="quotationPanel">
     <h2>Get a Sample Quotation</h2>
     <div class="desc">After someone fills out the quotation request form on a product, they'll be sent here to continue the conversation.</div>
     <label>Messenger Link</label>
     <input type="text" id="messengerLink" placeholder="https://m.me/yourpagename">
   </div>
 
-  <div class="panel">
+  <div class="panel" id="applyPanel">
     <h2>Apply as a Financial Advisor Page</h2>
     <div class="desc">This content shows in the "Apply as a Financial Advisor" section of your site — it opens in a new tab scrolled straight to it, with a slideshow of team/experience photos plus embedded videos.</div>
 
@@ -345,7 +493,7 @@
     <div class="add-row" id="addApplyVideoBtn">+ Add a video</div>
   </div>
 
-  <div class="panel">
+  <div class="panel" id="contactPanel">
     <h2>Contact / Footer</h2>
     <div class="row2">
       <div>
@@ -384,6 +532,79 @@
     JCC BUSINESS SOLUTIONS | ALL RIGHTS RESERVED 2026
   </div>
 
+</div>
+  </main>
+
+</div>
+</div>
+
+<div id="tabPanelTracking" style="display:none;">
+<div class="wrap">
+
+  <div class="panel">
+    <h2>📊 Click Tracking Dashboard</h2>
+    <div class="desc">Live counts of visitor clicks and form submissions, pulled from the "ClickTracking" tab in your Google Sheet.</div>
+    <button class="btn btn-outline btn-small" id="refreshTrackingBtn">Refresh</button>
+    <span class="upload-status" id="trackingStatus" style="margin-left:10px;"></span>
+  </div>
+
+  <div class="panel">
+    <div class="tracking-stat-grid">
+      <div class="tracking-stat-card">
+        <div class="tracking-stat-num" id="statTotalClicks">—</div>
+        <div class="tracking-stat-label">Total Clicks</div>
+      </div>
+      <div class="tracking-stat-card">
+        <div class="tracking-stat-num" id="statClicksToday">—</div>
+        <div class="tracking-stat-label">Today</div>
+      </div>
+      <div class="tracking-stat-card">
+        <div class="tracking-stat-num" id="statClicksWeek">—</div>
+        <div class="tracking-stat-label">This Week</div>
+      </div>
+      <div class="tracking-stat-card">
+        <div class="tracking-stat-num" id="statClicksMonth">—</div>
+        <div class="tracking-stat-label">This Month</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="topCtaPanel" style="display:none;">
+    <h2>🏆 Top-Performing CTA</h2>
+    <div class="top-cta-card">
+      <div class="top-cta-name" id="topCtaName">—</div>
+      <div class="top-cta-count" id="topCtaCount">—</div>
+    </div>
+  </div>
+
+  <div class="tracking-breakdown-grid">
+    <div class="panel">
+      <h2>By Button / Element</h2>
+      <div class="breakdown-list" id="breakdownButton"></div>
+    </div>
+    <div class="panel">
+      <h2>By Event Type</h2>
+      <div class="breakdown-list" id="breakdownEvent"></div>
+    </div>
+    <div class="panel">
+      <h2>By Page</h2>
+      <div class="breakdown-list" id="breakdownPage"></div>
+    </div>
+    <div class="panel">
+      <h2>By Device</h2>
+      <div class="breakdown-list" id="breakdownDevice"></div>
+    </div>
+    <div class="panel">
+      <h2>By Traffic Source</h2>
+      <div class="breakdown-list" id="breakdownSource"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="desc" style="margin-bottom:0;">Want the raw click-by-click log (timestamps, device, browser, UTM params, session IDs)? Open your Google Sheet and check the <b>"ClickTracking"</b> tab directly.</div>
+  </div>
+
+</div>
 </div>
 
 <div class="save-bar">
@@ -1330,6 +1551,175 @@ document.getElementById('downloadQrBtn').onclick = function(){
     status.className = 'upload-status err';
   }
 };
+
+// ===== Tab switching =====
+var trackingLoadedOnce = false;
+
+function switchTab(tab){
+  var contentPanel = document.getElementById('tabPanelContent');
+  var trackingPanel = document.getElementById('tabPanelTracking');
+  var contentBtn = document.getElementById('tabBtnContent');
+  var trackingBtn = document.getElementById('tabBtnTracking');
+  var saveBar = document.querySelector('.save-bar');
+
+  if(tab === 'tracking'){
+    contentPanel.style.display = 'none';
+    trackingPanel.style.display = '';
+    contentBtn.classList.remove('active');
+    trackingBtn.classList.add('active');
+    if(saveBar) saveBar.style.display = 'none'; // nothing to "save" on an analytics-only tab
+    if(!trackingLoadedOnce){
+      trackingLoadedOnce = true;
+      loadTrackingSummary();
+    }
+  } else {
+    contentPanel.style.display = '';
+    trackingPanel.style.display = 'none';
+    contentBtn.classList.add('active');
+    trackingBtn.classList.remove('active');
+    if(saveBar) saveBar.style.display = '';
+  }
+}
+
+document.getElementById('tabBtnContent').onclick = function(){ switchTab('content'); };
+document.getElementById('tabBtnTracking').onclick = function(){ switchTab('tracking'); };
+document.getElementById('refreshTrackingBtn').onclick = loadTrackingSummary;
+
+// ===== Click tracking dashboard =====
+function renderBreakdownList(containerId, items, maxRows){
+  var container = document.getElementById(containerId);
+  container.innerHTML = '';
+  if(!items || !items.length){
+    container.innerHTML = '<div class="breakdown-empty">No data yet.</div>';
+    return;
+  }
+  var rows = items.slice(0, maxRows || 8);
+  var maxCount = rows[0].count || 1;
+  rows.forEach(function(item){
+    var row = document.createElement('div');
+    row.className = 'breakdown-row';
+    var pct = Math.max(6, Math.round((item.count / maxCount) * 100));
+    row.innerHTML =
+      '<div class="breakdown-row-name" title="' + item.name + '">' + item.name + '</div>' +
+      '<div class="breakdown-row-bar"><div class="breakdown-row-bar-fill" style="width:' + pct + '%;"></div></div>' +
+      '<div class="breakdown-row-count">' + item.count + '</div>';
+    container.appendChild(row);
+  });
+}
+
+function loadTrackingSummary(){
+  if(!scriptConfigured()){
+    document.getElementById('trackingStatus').textContent = 'Connect your Web App URL first (Content tab → Connection Setup).';
+    document.getElementById('trackingStatus').className = 'upload-status err';
+    return;
+  }
+  var status = document.getElementById('trackingStatus');
+  status.textContent = 'Loading…';
+  status.className = 'upload-status uploading';
+
+  fetch(SCRIPT_URL + '?type=trackingSummary')
+    .then(function(r){ return r.json(); })
+    .then(function(res){
+      if(!res.success){
+        status.textContent = 'Could not load tracking data.';
+        status.className = 'upload-status err';
+        return;
+      }
+      var s = res.summary;
+      document.getElementById('statTotalClicks').textContent = s.totalClicks;
+      document.getElementById('statClicksToday').textContent = s.clicksToday;
+      document.getElementById('statClicksWeek').textContent = s.clicksThisWeek;
+      document.getElementById('statClicksMonth').textContent = s.clicksThisMonth;
+
+      var topCtaPanel = document.getElementById('topCtaPanel');
+      if(s.topCta){
+        topCtaPanel.style.display = '';
+        document.getElementById('topCtaName').textContent = s.topCta.name;
+        document.getElementById('topCtaCount').textContent = s.topCta.count + ' clicks';
+      } else {
+        topCtaPanel.style.display = 'none';
+      }
+
+      renderBreakdownList('breakdownButton', s.byButton);
+      renderBreakdownList('breakdownEvent', s.byEvent);
+      renderBreakdownList('breakdownPage', s.byPage);
+      renderBreakdownList('breakdownDevice', s.byDevice);
+      renderBreakdownList('breakdownSource', s.bySource);
+
+      status.textContent = 'Updated ' + new Date().toLocaleTimeString();
+      status.className = 'upload-status done';
+    })
+    .catch(function(){
+      status.textContent = 'Could not load — check your connection.';
+      status.className = 'upload-status err';
+    });
+}
+
+// ===== Sidebar: highlight the section currently in view while scrolling =====
+function initSidebarHighlight(){
+  var links = document.querySelectorAll('.sidebar-link');
+  if(!links.length) return;
+
+  var linkByPanelId = {};
+  links.forEach(function(link){
+    linkByPanelId[link.getAttribute('data-panel')] = link;
+  });
+
+  if('IntersectionObserver' in window){
+    var observer = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        var link = linkByPanelId[entry.target.id];
+        if(!link) return;
+        if(entry.isIntersecting){
+          links.forEach(function(l){ l.classList.remove('active'); });
+          link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-80px 0px -70% 0px', threshold: 0 });
+
+    Object.keys(linkByPanelId).forEach(function(panelId){
+      var panelEl = document.getElementById(panelId);
+      if(panelEl) observer.observe(panelEl);
+    });
+  }
+
+  // Mobile hamburger toggle — same open/close pattern as the main site's mobile menu
+  var sidebar = document.getElementById('adminSidebar');
+  var toggleBtn = document.getElementById('sidebarToggleBtn');
+  if(sidebar && toggleBtn){
+    toggleBtn.onclick = function(){
+      var isOpen = sidebar.classList.toggle('mobile-open');
+      toggleBtn.textContent = isOpen ? '✕' : '☰';
+    };
+    // Selecting a section closes the menu right away
+    links.forEach(function(link){
+      link.addEventListener('click', function(){
+        sidebar.classList.remove('mobile-open');
+        toggleBtn.textContent = '☰';
+      });
+    });
+    // Clicking anywhere outside also closes it
+    document.addEventListener('click', function(e){
+      if(sidebar.classList.contains('mobile-open') && !sidebar.contains(e.target) && e.target !== toggleBtn){
+        sidebar.classList.remove('mobile-open');
+        toggleBtn.textContent = '☰';
+      }
+    });
+  }
+}
+initSidebarHighlight();
+
+// ===== Save bar: hidden by default on desktop, reveals when the cursor nears the bottom edge =====
+(function(){
+  var saveBar = document.querySelector('.save-bar');
+  if(!saveBar) return;
+  var REVEAL_ZONE = 90; // px from the bottom of the viewport that triggers reveal
+
+  document.addEventListener('mousemove', function(e){
+    var nearBottom = e.clientY >= window.innerHeight - REVEAL_ZONE;
+    saveBar.classList.toggle('reveal', nearBottom);
+  });
+})();
 
 initSetupPanel();
 drawQrPlaceholder();
