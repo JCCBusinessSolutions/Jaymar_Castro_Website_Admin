@@ -701,17 +701,26 @@ function initSetupPanel(){
     status.textContent = 'Connected ✓ — loading your content…';
     status.className = 'upload-status done';
 
-    loadState();
+    loadState(function(success){
+      if(success){
+        status.textContent = 'Connected ✓ — your content loaded successfully.';
+        status.className = 'upload-status done';
+      } else {
+        status.textContent = 'Connected, but could not load your content — double-check the URL is correct and fully deployed.';
+        status.className = 'upload-status err';
+      }
+    });
     loadTestimonials();
   };
 }
 
-function loadState(){
+function loadState(onDone){
   if(!scriptConfigured()){
     setSyncStatus('⚠️ Not connected — see setup note below', 'err');
     document.getElementById('configNote').style.display = 'block';
     state = JSON.parse(JSON.stringify(DEFAULTS));
     renderForm();
+    if(onDone) onDone(false);
     return;
   }
   document.getElementById('configNote').style.display = 'none';
@@ -731,12 +740,14 @@ function loadState(){
       if(!Array.isArray(state.awards)) state.awards = [];
       renderForm();
       setSyncStatus('✓ Connected to Google Sheets', 'ok');
+      if(onDone) onDone(true);
     })
     .catch(function(err){
       console.error(err);
       setSyncStatus('⚠️ Could not reach the Google Sheet — check the Script URL', 'err');
       state = JSON.parse(JSON.stringify(DEFAULTS));
       renderForm();
+      if(onDone) onDone(false);
     });
 }
 
