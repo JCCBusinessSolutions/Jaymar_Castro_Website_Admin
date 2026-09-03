@@ -757,6 +757,43 @@ function fileToDataUrl(file, cb){
   reader.readAsDataURL(file);
 }
 
+// Resizes/re-compresses an image client-side before it ever gets uploaded —
+// most phone photos are 3-8MB raw, which is unnecessarily slow to upload
+// and slow for site visitors to load later. Non-image files (shouldn't
+// happen given accept="image/*", but just in case) pass through untouched.
+var MAX_UPLOAD_DIMENSION = 1600; // px, longest side
+var UPLOAD_JPEG_QUALITY = 0.82;
+
+function compressImageFile(file, cb){
+  if(!file.type || file.type.indexOf('image/') !== 0){ fileToDataUrl(file, cb); return; }
+
+  var img = new Image();
+  var objectUrl = URL.createObjectURL(file);
+  img.onload = function(){
+    URL.revokeObjectURL(objectUrl);
+    var w = img.width, h = img.height;
+    if(w > MAX_UPLOAD_DIMENSION || h > MAX_UPLOAD_DIMENSION){
+      if(w >= h){ h = Math.round(h * (MAX_UPLOAD_DIMENSION / w)); w = MAX_UPLOAD_DIMENSION; }
+      else { w = Math.round(w * (MAX_UPLOAD_DIMENSION / h)); h = MAX_UPLOAD_DIMENSION; }
+    }
+    var canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    var ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, w, h);
+    try {
+      cb(canvas.toDataURL('image/jpeg', UPLOAD_JPEG_QUALITY));
+    } catch(e){
+      // canvas export failed (rare) — fall back to the original file untouched
+      fileToDataUrl(file, cb);
+    }
+  };
+  img.onerror = function(){
+    URL.revokeObjectURL(objectUrl);
+    fileToDataUrl(file, cb); // fall back to uploading the original if it fails to decode
+  };
+  img.src = objectUrl;
+}
+
 // Uploads a photo to Google Drive via the Apps Script backend.
 // Calls onStart() immediately, then onDone(url) when the Drive URL comes back.
 function uploadPhoto(file, filename, onStart, onDone, onError){
@@ -765,7 +802,7 @@ function uploadPhoto(file, filename, onStart, onDone, onError){
     return;
   }
   onStart();
-  fileToDataUrl(file, function(dataUrl){
+  compressImageFile(file, function(dataUrl){
     fetch(SCRIPT_URL, {
       method: 'POST',
       headers: {'Content-Type': 'text/plain;charset=utf-8'}, // avoids CORS preflight on Apps Script
